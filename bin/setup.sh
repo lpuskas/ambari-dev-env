@@ -17,8 +17,15 @@ check-dev-env(){
 : ${HOME?"Please set the variable in the .dev-profile file"}
 : ${DEV_DOCKER_IMAGE:=ambari/docker-dev}
 : ${DEV_AMBARI_PROJECT_DIR?"Please set the variable in the .dev-profile file"}
-: ${DEV_AMBARI_SERVER_CONFIG_DIR?"Please set the variable in the .dev-profile file"}
+: ${DEV_AMBARI_SERVER_CONFIG_DIR:="$DEV_PROJECT_PATH/conf"}
 : ${DEV_NUMBER_OF_AGENTS:=3}
+}
+
+set-project-path() {
+  pushd "$(dirname "$0")" > /dev/null
+  cd ..
+  DEV_PROJECT_PATH=`pwd`
+  popd > /dev/null
 }
 
 show-dev-env(){
@@ -86,6 +93,7 @@ generate-docker-compose-yml() {
 ambari-db:
   privileged: true
   container_name: ambari-db
+  hostname: ambari-db
   ports:
     - "5432:5432"
   volumes:
@@ -103,7 +111,8 @@ ambari-server:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
-    - "$DEV_AMBARI_PROJECT_DIR/dev-support/docker/dev-docker:/scripts"
+    - "$DEV_PROJECT_PATH/runServer.sh:/scripts/runServer.sh"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR:/ambari-server-conf"
     - "$HOME/tmp/:/tmp"
   hostname: ambari-server
   image: $DEV_DOCKER_IMAGE
@@ -125,7 +134,7 @@ ambari-agent-$i:
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
-    - "$DEV_AMBARI_PROJECT_DIR/dev-support/docker/dev-docker:/scripts"
+    - "$DEV_PROJECT_PATH/runAgent.sh:/scripts/runAgent.sh"
   command: -c '/scripts/runAgent.sh'
 EOF
 done
@@ -134,6 +143,7 @@ echo "Done."
 
 main() {
   generate-dev-env-profile
+  set-project-path
   check-dev-env
   check-dev-docker-image
   build-ambari-agent-rpm
