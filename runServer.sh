@@ -22,6 +22,17 @@ generate-classpath() {
   fi
 }
 
+setup-security-config() {
+  mkdir -p /var/lib/ambari-server/keys
+  cp -r /ambari/ambari-server/src/main/resources/db /var/lib/ambari-server/keys/db
+  cp /ambari/ambari-server/conf/unix/ca.config /var/lib/ambari-server/keys/
+}
+
+create-version-file() {
+  echo "Set ambari-server version to $SERVER_VERSION"
+  echo $SERVER_VERSION > /ambari-server-conf/version
+}
+
 ambari-server-start() {
   export CONTAINER_IP=$(hostname -i)
   echo "Container IP address": $CONTAINER_IP
@@ -38,6 +49,8 @@ ambari-server-start() {
 main() {
   cd /ambari/ambari-server
   generate-classpath
+  setup-security-config
+  create-version-file
   ambari-server-start
 }
 
