@@ -1,4 +1,3 @@
 .dev-profile
 conf/version
-conf/keys
 docker-compose.yml
