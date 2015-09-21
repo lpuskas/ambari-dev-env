@@ -19,7 +19,7 @@ check-dev-env(){
 : ${DEV_AMBARI_PROJECT_DIR?"Please set the variable in the .dev-profile file"}
 : ${DEV_AMBARI_SERVER_CONFIG_DIR:="$DEV_PROJECT_PATH/conf"}
 : ${DEV_NUMBER_OF_AGENTS:=3}
-: ${DEV_AMBARI_SERVER_VERSION:="2.1.0"}
+: ${DEV_AMBARI_SERVER_VERSION:="2.0.0"}
 : ${DEV_AMBARI_SERVER_DEBUG_PORT:=5005}
 }
 
