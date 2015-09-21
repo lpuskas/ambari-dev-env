@@ -19,6 +19,7 @@ check-dev-env(){
 : ${DEV_AMBARI_PROJECT_DIR?"Please set the variable in the .dev-profile file"}
 : ${DEV_AMBARI_SERVER_CONFIG_DIR:="$DEV_PROJECT_PATH/conf"}
 : ${DEV_NUMBER_OF_AGENTS:=3}
+: ${DEV_AMBARI_SERVER_VERSION:="2.1.0"}
 }
 
 set-project-path() {
@@ -49,6 +50,9 @@ generate-dev-env-profile() {
 
 # Number of ambari agents to start
 #DEV_NUMBER_OF_AGENTS=
+
+# Custom version of ambari server
+#DEV_AMBARI_SERVER_VERSION=
 EOF
 echo "Please fill the newly generated .dev-profile in the current directory"
 exit 1;
@@ -107,6 +111,8 @@ ambari-server:
   ports:
     - "50100:50100"
     - "8080:8080"
+  environment:
+    - SERVER_VERSION=$DEV_AMBARI_SERVER_VERSION
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"

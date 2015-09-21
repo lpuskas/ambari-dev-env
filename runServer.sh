@@ -22,6 +22,11 @@ generate-classpath() {
   fi
 }
 
+create-version-file() {
+  echo "Set ambari-server version to $SERVER_VERSION"
+  echo $SERVER_VERSION > /ambari-server-conf/version
+}
+
 ambari-server-start() {
   export CONTAINER_IP=$(hostname -i)
   echo "Container IP address": $CONTAINER_IP
@@ -38,6 +43,7 @@ ambari-server-start() {
 main() {
   cd /ambari/ambari-server
   generate-classpath
+  create-version-file
   ambari-server-start
 }
 
