@@ -46,9 +46,14 @@ ambari-server-start() {
     org.apache.ambari.server.controller.AmbariServer
 }
 
+set-path() {
+  export PATH=$PATH:/ambari/ambari-common/src/main/unix
+}
+
 main() {
   cd /ambari/ambari-server
   generate-classpath
+  set-path
   setup-security-config
   create-version-file
   ambari-server-start
