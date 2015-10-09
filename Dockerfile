@@ -18,7 +18,7 @@ RUN yum clean all -y && yum update -y
 
 ## Install some basic utilities that aren't in the default image
 RUN yum clean all -y && yum update -y
-RUN yum -y install vim wget rpm-build sudo which telnet tar openssh-server openssh-clients ntp git python-devel python-setuptools httpd
+RUN yum -y install vim wget rpm-build sudo which telnet tar openssh-server openssh-clients ntp git python-devel python-setuptools httpd krb5-libs krb5-workstation
 
 # phantomjs dependency
 RUN yum -y install fontconfig freetype libfreetype.so.6 libfontconfig.so.1 libstdc++.so.6
@@ -54,5 +54,3 @@ RUN sed -ri 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
 RUN yum -y install http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 RUN yum -y install nodejs npm --enablerepo=epel
 RUN npm install -g brunch@1.7.17
-
-
