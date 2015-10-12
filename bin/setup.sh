@@ -120,9 +120,9 @@ ambari-server:
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
-    - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
     - "$DEV_PROJECT_PATH/runServer.sh:/scripts/runServer.sh"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR:/ambari-server-conf"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
     - "$HOME/tmp/:/tmp"
   hostname: ambari-server
   image: $DEV_DOCKER_IMAGE
