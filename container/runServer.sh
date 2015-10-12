@@ -42,7 +42,7 @@ ambari-server-start() {
     -Dfile.encoding=UTF-8 \
     -Dlog4j.configuration=file:/ambari-server-conf/log4j.properties \
     -Xmx2048m -Xms256m \
-    -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=50100 \
+    -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=50100 \
     -classpath $(cat /tmp/cp.txt):target/classes:/ambari-server-conf:/ambari/ambari-views/target \
     org.apache.ambari.server.controller.AmbariServer
 }

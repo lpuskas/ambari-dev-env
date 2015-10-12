@@ -104,9 +104,12 @@ ambari-db:
   hostname: ambari-db
   ports:
     - "5432:5432"
+  environment:
+    - POSTGRES_USER=ambari
+    - POSTGRES_PASSWORD=bigdata
   volumes:
     - "/var/lib/boot2docker/ambari:/var/lib/postgresql/data"
-  image: sequenceiq/ambari-dev-psql
+  image: sequenceiq/docker-ambari-dev-psql
 
 ambari-server:
   privileged: true
@@ -120,7 +123,8 @@ ambari-server:
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
-    - "$DEV_PROJECT_PATH/runServer.sh:/scripts/runServer.sh"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
+    - "$DEV_PROJECT_PATH/container/runServer.sh:/scripts/runServer.sh"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR:/ambari-server-conf"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
     - "$HOME/tmp/:/tmp"
@@ -144,7 +148,7 @@ ambari-agent-$i:
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
-    - "$DEV_PROJECT_PATH/runAgent.sh:/scripts/runAgent.sh"
+    - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
   command: -c '/scripts/runAgent.sh'
 EOF
 done
