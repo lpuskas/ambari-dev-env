@@ -25,7 +25,6 @@ check-dev-env(){
 
 set-project-path() {
   pushd "$(dirname "$0")" > /dev/null
-  cd ..
   DEV_PROJECT_PATH=`pwd`
   popd > /dev/null
 }
