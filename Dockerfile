@@ -54,3 +54,8 @@ RUN sed -ri 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
 RUN yum -y install http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 RUN yum -y install nodejs npm --enablerepo=epel
 RUN npm install -g brunch@1.7.17
+
+# Install unlimited security policy JCE jars to $JAVA_HOME/jre/lib/security/
+ADD container/UnlimitedJCEPolicyJDK7.zip /tmp/
+RUN unzip -o -j -q /tmp/UnlimitedJCEPolicyJDK7.zip -d $JAVA_HOME/jre/lib/security/
+RUN rm -rf /tmp/UnlimitedJCEPolicyJDK7.zip
