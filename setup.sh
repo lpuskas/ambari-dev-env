@@ -21,6 +21,10 @@ check-dev-env(){
 : ${DEV_NUMBER_OF_AGENTS:=3}
 : ${DEV_AMBARI_SERVER_VERSION:="2.0.0"}
 : ${DEV_AMBARI_SERVER_DEBUG_PORT:=5005}
+: ${DEV_KERBEROS_DOCKER_IMAGE:=sequenceiq/kerberos}
+: ${DEV_KERBEROS_REALM:=AMBARI.APACHE.ORG}
+: ${DEV_KERBEROS_DOMAIN_REALM:=kerberos-server}
+: ${DEV_AMBARI_DB_DOCKER_IMAGE:=sequenceiq/ambari-dev-psql}
 }
 
 set-project-path() {
@@ -108,7 +112,7 @@ ambari-db:
     - POSTGRES_PASSWORD=bigdata
   volumes:
     - "/var/lib/boot2docker/ambari:/var/lib/postgresql/data"
-  image: sequenceiq/docker-ambari-dev-psql
+  image: $DEV_AMBARI_DB_DOCKER_IMAGE
 
 ambari-server:
   privileged: true
@@ -151,6 +155,21 @@ ambari-agent-$i:
   command: -c '/scripts/runAgent.sh'
 EOF
 done
+
+cat <<EOF >> $1
+kerberos-server:
+  privileged: true
+  container_name:
+    - kerberos-server
+  volumes:
+    - "/dev/urandom:/dev/random"
+    - "$HOME/tmp/kdc/log:/var/log/kerberos"
+  hostname: kerberos-server
+  image: $DEV_KERBEROS_DOCKER_IMAGE
+  environment:
+    - REALM=$DEV_KERBEROS_REALM
+    - DOMAIN_REALM=$DEV_KERBEROS_DOMAIN_REALM
+EOF
 echo "Done."
 }
 
