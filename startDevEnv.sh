@@ -12,5 +12,16 @@
 #   limitations under the License.
 
 echo "Starting the dev environment ..."
+case "$1" in
+      schema-upgrade)
+          echo "Starting schema upgrade ...";
+          docker-compose run -d --service-ports --entrypoint="/scripts/upgradeSchema.sh" ambari-server -c "cc"
+          ;;
+
+      *)
 docker-compose up -d
+esac
+
+
+
 echo "Dev env started."
