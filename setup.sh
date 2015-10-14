@@ -151,6 +151,7 @@ ambari-agent-$i:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
+    - "$HOME/tmp/ambari-agent-$i:/var/lib/ambari-agent/tmp"
   command: -c '/scripts/runAgent.sh'
 EOF
 done
