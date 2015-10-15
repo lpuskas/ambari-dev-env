@@ -127,6 +127,8 @@ ambari-server:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container:/scripts"
+    - "$DEV_PROJECT_PATH/container/libs/postgresql-9.3-1101-jdbc4.jar:/ambari/ambari-server/target/classes/postgres-jdbc-driver.jar"
+    - "$DEV_AMBARI_PROJECT_DIR/ambari-server/target/DBConnectionVerification.jar:/ambari/ambari-server/target/classes/DBConnectionVerification.jar"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
     - "$HOME/tmp/:/tmp"
