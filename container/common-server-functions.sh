@@ -11,6 +11,27 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+generate-classpath() {
+  if [ ! -f /tmp/cp.txt ]
+  then
+    echo "Generating classpath..."
+    mvn dependency:build-classpath -Dmdep.outputFile=/tmp/cp.txt
+
+    echo "Generated classpath:"
+    cat /tmp/cp.txt
+  fi
+}
+
+setup-security-config() {
+  mkdir -p /var/lib/ambari-server/keys
+  cp -r /ambari/ambari-server/src/main/resources/db /var/lib/ambari-server/keys/db
+  cp /ambari/ambari-server/conf/unix/ca.config /var/lib/ambari-server/keys/
+}
+
+create-version-file() {
+  echo "Set ambari-server version to $SERVER_VERSION"
+  echo $SERVER_VERSION > /ambari-server-conf/version
+}
 
 ambari-server-start() {
   export CONTAINER_IP=$(hostname -i)
@@ -26,14 +47,12 @@ ambari-server-start() {
     org.apache.ambari.server.controller.AmbariServer
 }
 
+set-path() {
+  export PATH=$PATH:/ambari/ambari-common/src/main/unix
+}
+
 main() {
-  source common-server-functions.sh
-  cd /ambari/ambari-server
-  generate-classpath
-  set-path
-  setup-security-config
-  create-version-file
-  ambari-server-start
+  echo "Server functions loaded"
 }
 
 main "$@"
