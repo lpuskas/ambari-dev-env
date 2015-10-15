@@ -27,12 +27,13 @@ ambari-server-start() {
 }
 
 main() {
-  source common-server-functions.sh
+  source /scripts/common-server-functions.sh
   cd /ambari/ambari-server
   generate-classpath
   set-path
   setup-security-config
   create-version-file
+  copy-libs-to-resources-dir
   ambari-server-start
 }
 

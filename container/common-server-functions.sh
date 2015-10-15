@@ -51,6 +51,14 @@ set-path() {
   export PATH=$PATH:/ambari/ambari-common/src/main/unix
 }
 
+copy-libs-to-resources-dir() {
+  echo "Copy /scipts/libs/postgresql-9.3-1101-jdbc4.jar to /ambari/ambari-server/target/classes/postgres-jdbc-driver.jar"
+  cp -f /scripts/libs/postgresql-9.3-1101-jdbc4.jar /ambari/ambari-server/target/classes/postgres-jdbc-driver.jar
+
+  echo "cp -f /ambari/ambari-server/target/DBConnectionVerification.jar /ambari/ambari-server/target/classes/DBConnectionVerification.jar"
+  cp -f /ambari/ambari-server/target/DBConnectionVerification.jar /ambari/ambari-server/target/classes/DBConnectionVerification.jar
+}
+
 main() {
   echo "Server functions loaded"
 }

@@ -27,7 +27,7 @@ upgrade-schema() {
 }
 
 main() {
-  source common-server-functions.sh
+  source /scripts/common-server-functions.sh
   cd /ambari/ambari-server
   generate-classpath
   set-path
