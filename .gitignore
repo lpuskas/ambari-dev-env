@@ -1,3 +1,4 @@
 .dev-profile
 conf/version
 *.yml
+*.bak

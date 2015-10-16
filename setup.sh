@@ -116,6 +116,25 @@ $CONTAINER_NAME:
 EOF
 }
 
+gen-local-db-container-yml(){
+  CONTAINER_NAME=ambari-db
+  cat >> $1<<EOF
+$CONTAINER_NAME:
+  privileged: true
+  container_name: $CONTAINER_NAME
+  hostname: $CONTAINER_NAME
+  ports:
+    - "5432:5432"
+  environment:
+    - POSTGRES_USER=ambari
+    - POSTGRES_PASSWORD=bigdata
+  volumes:
+    - "/var/lib/boot2docker/ambari:/var/lib/postgresql/data"
+    - "$DEV_PROJECT_PATH/container:/scripts"
+  image: postgres:9.4
+
+EOF
+}
 gen-ambari-server-yml(){
   CONTAINER_NAME=ambari-server
   cat >> $1<<EOF
@@ -183,6 +202,7 @@ $CONTAINER_NAME:
 EOF
 }
 
+
 gen-compose-yml(){
   echo "Generating compose file: $1"
   if [ -f  "$1" ]
@@ -191,7 +211,8 @@ gen-compose-yml(){
       mv $1 $backup_yml
       echo "Backed up previous compose file to: $backup_yml"
   fi
-  gen-database-container-yml $1
+  #gen-database-container-yml $1
+  gen-local-db-container-yml $1
   gen-ambari-server-yml $1
   for (( i=1; i<=$DEV_NUMBER_OF_AGENTS; i++ ))
   do
