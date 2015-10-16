@@ -19,6 +19,8 @@ generate-classpath() {
 
     echo "Generated classpath:"
     cat /tmp/cp.txt
+  else
+    echo "Reusing previously generated classpath!!!"
   fi
 }
 
