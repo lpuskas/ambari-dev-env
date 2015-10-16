@@ -155,7 +155,6 @@ $CONTAINER_NAME:
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
     - "$HOME/tmp/docker/ambari-server/tmp:/tmp"
-    - "$DEV_YUM_CACHE_DIR:/var/cache/yum"
   image: $DEV_DOCKER_IMAGE
   entrypoint: ["/bin/sh"]
   command: -c '/scripts/runServer.sh'
@@ -179,7 +178,6 @@ $CONTAINER_NAME:
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
     - "$HOME/tmp/docker/ambari-agents/ambari-agent-$i:/var/lib/ambari-agent/tmp"
-    - "$DEV_YUM_CACHE_DIR:/var/cache/yum"
   command: -c '/scripts/runAgent.sh'
 
 EOF
