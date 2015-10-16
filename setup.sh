@@ -129,6 +129,7 @@ $CONTAINER_NAME:
     - POSTGRES_USER=ambari
     - POSTGRES_PASSWORD=bigdata
   volumes:
+    - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "/var/lib/boot2docker/ambari:/var/lib/postgresql/data"
     - "$DEV_PROJECT_PATH/container:/scripts"
   image: postgres:9.4
