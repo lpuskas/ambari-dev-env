@@ -25,6 +25,7 @@ check-dev-env(){
 : ${DEV_KERBEROS_REALM:=AMBARI.APACHE.ORG}
 : ${DEV_KERBEROS_DOMAIN_REALM:=kerberos-server}
 : ${DEV_AMBARI_DB_DOCKER_IMAGE:=sequenceiq/ambari-dev-psql}
+: ${DEV_YUM_CACHE_DIR:="$HOME/tmp/docker/cache/yum"}
 }
 
 set-project-path() {
@@ -58,6 +59,10 @@ DEV_NUMBER_OF_AGENTS=3
 
 # Debug port of ambari server
 DEV_AMBARI_SERVER_DEBUG_PORT=5005
+
+# The location of the Yum cache
+#DEV_YUM_CACHE_DIR
+
 
 EOF
 echo "Please fill the newly generated .dev-profile in the current directory"
@@ -129,7 +134,8 @@ $CONTAINER_NAME:
     - "$DEV_PROJECT_PATH/container:/scripts"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
-    - "$HOME/tmp/:/tmp"
+    - "$HOME/tmp/docker/ambari-server/tmp:/tmp"
+    - "$DEV_YUM_CACHE_DIR:/var/cache/yum"
   image: $DEV_DOCKER_IMAGE
   entrypoint: ["/bin/sh"]
   command: -c '/scripts/runServer.sh'
@@ -152,7 +158,8 @@ $CONTAINER_NAME:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
-    - "$HOME/tmp/ambari-agent-$i:/var/lib/ambari-agent/tmp"
+    - "$HOME/tmp/docker/ambari-agents/ambari-agent-$i:/var/lib/ambari-agent/tmp"
+    - "$DEV_YUM_CACHE_DIR:/var/cache/yum"
   command: -c '/scripts/runAgent.sh'
 
 EOF
@@ -167,7 +174,7 @@ $CONTAINER_NAME:
   hostname: $CONTAINER_NAME
   volumes:
     - "/dev/urandom:/dev/random"
-    - "$HOME/tmp/kdc/log:/var/log/kerberos"
+    - "$HOME/tmp/docker/kdc/log:/var/log/kerberos"
   image: $DEV_KERBEROS_DOCKER_IMAGE
   environment:
     - REALM=$DEV_KERBEROS_REALM
