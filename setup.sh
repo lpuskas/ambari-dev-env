@@ -46,20 +46,19 @@ generate-dev-env-profile() {
   if [ ! -f .dev-profile ]
     then
       cat > .dev-profile <<EOF
-# The locatin of theambari project on the host
-#DEV_AMBARI_PROJECT_DIR=
-
-# The location of the server configuration files
-#DEV_AMBARI_SERVER_CONFIG_DIR=
+# The locatin of the ambari project on the host
+# This entry is mandatory!
+DEV_AMBARI_PROJECT_DIR=
 
 # Number of ambari agents to start
-#DEV_NUMBER_OF_AGENTS=
+DEV_NUMBER_OF_AGENTS=3
 
 # Custom version of ambari server
 #DEV_AMBARI_SERVER_VERSION=
 
-# Custom debug port of ambari server
-#DEV_AMBARI_SERVER_DEBUG_PORT=
+# Debug port of ambari server
+DEV_AMBARI_SERVER_DEBUG_PORT=5005
+
 EOF
 echo "Please fill the newly generated .dev-profile in the current directory"
 exit 1;
@@ -82,7 +81,7 @@ build-ambari-agent-rpm() {
   then
     echo "Ambari agent rpm found."
   else
-    echo "Generating ambari agent rpm ..."
+    echo "Building Ambari Agent rpm ..."
     docker run \
       --rm --privileged \
       -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
@@ -94,11 +93,12 @@ build-ambari-agent-rpm() {
 }
 
 gen-database-container-yml(){
+  CONTAINER_NAME=ambari-db
   cat >> $1<<EOF
-ambari-db:
+$CONTAINER_NAME:
   privileged: true
-  container_name: ambari-db
-  hostname: ambari-db
+  container_name: $CONTAINER_NAME
+  hostname: $CONTAINER_NAME
   ports:
     - "5432:5432"
   environment:
@@ -107,78 +107,91 @@ ambari-db:
   volumes:
     - "/var/lib/boot2docker/ambari:/var/lib/postgresql/data"
   image: $DEV_AMBARI_DB_DOCKER_IMAGE
+
 EOF
 }
 
 gen-ambari-server-yml(){
-cat >> $1<<EOF
-  ambari-server:
-    privileged: true
-    container_name:
-      - ambari-server
-    ports:
-      - "$DEV_AMBARI_SERVER_DEBUG_PORT:50100"
-      - "8080:8080"
-    environment:
-      - SERVER_VERSION=$DEV_AMBARI_SERVER_VERSION
-    volumes:
-      - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
-      - "$HOME/.m2/:/root/.m2"
-      - "$DEV_PROJECT_PATH/container:/scripts"
-      - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
-      - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
-      - "$HOME/tmp/:/tmp"
-    hostname: ambari-server
-    image: $DEV_DOCKER_IMAGE
-    entrypoint: ["/bin/sh"]
-    command: -c '/scripts/runServer.sh'
+  CONTAINER_NAME=ambari-server
+  cat >> $1<<EOF
+$CONTAINER_NAME:
+  privileged: true
+  container_name: $CONTAINER_NAME
+  hostname: $CONTAINER_NAME
+  ports:
+    - "$DEV_AMBARI_SERVER_DEBUG_PORT:50100"
+    - "8080:8080"
+  environment:
+    - SERVER_VERSION=$DEV_AMBARI_SERVER_VERSION
+  volumes:
+    - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
+    - "$HOME/.m2/:/root/.m2"
+    - "$DEV_PROJECT_PATH/container:/scripts"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
+    - "$HOME/tmp/:/tmp"
+  image: $DEV_DOCKER_IMAGE
+  entrypoint: ["/bin/sh"]
+  command: -c '/scripts/runServer.sh'
+
 EOF
 }
 
-
 gen-ambari-agent-yml(){
+  CONTAINER_NAME=ambari-agent-$i
   cat <<EOF >> $1
-ambari-agent-$i:
-privileged: true
-container_name: ambari-agent-$i
-hostname: ambari-agent-$i
-image: $DEV_DOCKER_IMAGE
-environment:
-  - AMBARI_SERVER_HOSTNAME=ambari-server
-entrypoint: ["/bin/sh"]
-volumes:
-  - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
-  - "$HOME/.m2/:/root/.m2"
-  - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
-  - "$HOME/tmp/ambari-agent-$i:/var/lib/ambari-agent/tmp"
-command: -c '/scripts/runAgent.sh'
+$CONTAINER_NAME:
+  privileged: true
+  container_name: $CONTAINER_NAME
+  hostname: $CONTAINER_NAME
+  image: $DEV_DOCKER_IMAGE
+  environment:
+    - AMBARI_SERVER_HOSTNAME=ambari-server
+  entrypoint: ["/bin/sh"]
+  volumes:
+    - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
+    - "$HOME/.m2/:/root/.m2"
+    - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
+    - "$HOME/tmp/ambari-agent-$i:/var/lib/ambari-agent/tmp"
+  command: -c '/scripts/runAgent.sh'
+
 EOF
 }
 
 gen-kerberos-server-yml(){
+  CONTAINER_NAME=kerberos-server
   cat <<EOF >> $1
-  kerberos-server:
-    privileged: true
-    container_name:
-      - kerberos-server
-    volumes:
-      - "/dev/urandom:/dev/random"
-      - "$HOME/tmp/kdc/log:/var/log/kerberos"
-    hostname: kerberos-server
-    image: $DEV_KERBEROS_DOCKER_IMAGE
-    environment:
-      - REALM=$DEV_KERBEROS_REALM
-      - DOMAIN_REALM=$DEV_KERBEROS_DOMAIN_REALM
+$CONTAINER_NAME:
+  privileged: true
+  container_name: $CONTAINER_NAME
+  hostname: $CONTAINER_NAME
+  volumes:
+    - "/dev/urandom:/dev/random"
+    - "$HOME/tmp/kdc/log:/var/log/kerberos"
+  image: $DEV_KERBEROS_DOCKER_IMAGE
+  environment:
+    - REALM=$DEV_KERBEROS_REALM
+    - DOMAIN_REALM=$DEV_KERBEROS_DOMAIN_REALM
+
 EOF
 }
 
 gen-compose-yml(){
+  echo "Generating compose file: $1"
+  if [ -f  "$1" ]
+    then
+      backup_yml=$1_$(date +"%Y%m%d_%H%M%S").bak;
+      mv $1 $backup_yml
+      echo "Backed up previous compose file to: $backup_yml"
+  fi
   gen-database-container-yml $1
   gen-ambari-server-yml $1
   for (( i=1; i<=$DEV_NUMBER_OF_AGENTS; i++ ))
   do
     gen-ambari-agent-yml $1
   done
+  gen-kerberos-server-yml $1
+  echo "Compose file: $1 ready!"
 }
 
 main() {
