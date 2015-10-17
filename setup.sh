@@ -154,7 +154,10 @@ $CONTAINER_NAME:
     - "$DEV_PROJECT_PATH/container:/scripts"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
-    - "$HOME/tmp/docker/ambari-server/tmp:/tmp"
+    - "$HOME/tmp/docker/ambari-server/tmp:/tmp/ambari-server"
+    - "$HOME/tmp/docker/ambari-server/logs:/logs/ambari-server"
+    - "$HOME/tmp/docker/ambari-server/keytabs:/keytabs/ambari-server"
+    - "$HOME/tmp/docker/ambari-server/ssl-keys:/ssl-keys/ambari-server"
   image: $DEV_DOCKER_IMAGE
   entrypoint: ["/bin/sh"]
   command: -c '/scripts/runServer.sh'
