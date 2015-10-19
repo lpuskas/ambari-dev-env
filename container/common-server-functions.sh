@@ -25,9 +25,9 @@ generate-classpath() {
 }
 
 setup-security-config() {
-  mkdir -p /var/lib/ambari-server/keys
-  cp -r /ambari/ambari-server/src/main/resources/db /var/lib/ambari-server/keys/db
-  cp /ambari/ambari-server/conf/unix/ca.config /var/lib/ambari-server/keys/
+  mkdir -p /ssl-keys/ambari-server/db/newcerts
+  touch /ssl-keys/ambari-server/db/index.txt
+  cp -f /ambari-server-conf/ca.config /ssl-keys/ambari-server/ca.config
 }
 
 create-version-file() {
