@@ -97,25 +97,6 @@ build-ambari-agent-rpm() {
   fi
 }
 
-gen-database-container-yml(){
-  CONTAINER_NAME=ambari-db
-  cat >> $1<<EOF
-$CONTAINER_NAME:
-  privileged: true
-  container_name: $CONTAINER_NAME
-  hostname: $CONTAINER_NAME
-  ports:
-    - "5432:5432"
-  environment:
-    - POSTGRES_USER=ambari
-    - POSTGRES_PASSWORD=bigdata
-  volumes:
-    - "/var/lib/boot2docker/ambari:/var/lib/postgresql/data"
-  image: $DEV_AMBARI_DB_DOCKER_IMAGE
-
-EOF
-}
-
 gen-local-db-container-yml(){
   CONTAINER_NAME=ambari-db
   cat >> $1<<EOF
@@ -132,6 +113,7 @@ $CONTAINER_NAME:
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$DEV_PROJECT_PATH/container:/scripts"
+  entrypoint: /scripts/reload-schema.sh
   image: postgres:9.4
 
 EOF
