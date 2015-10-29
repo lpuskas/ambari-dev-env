@@ -97,6 +97,22 @@ build-ambari-agent-rpm() {
   fi
 }
 
+build-ambari-metrics-rpm() {
+  if [ "$(ls $DEV_AMBARI_PROJECT_DIR/ambari-metrics/ambari-metrics-assembly/target/rpm  | wc -l)" -ge "1" ]
+  then
+    echo "Ambari metrics rmp found."
+  else
+    echo "Building Ambari Metrics rpm ..."
+    docker run \
+      --rm --privileged \
+      -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
+      -v $HOME/.m2/:/root/.m2 --entrypoint=/bin/bash \
+      -w /ambari/ambari-metrics \
+      $DEV_DOCKER_IMAGE \
+      -c 'mvn clean package -Dbuild-rpm -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
+  fi
+}
+
 gen-local-db-container-yml(){
   CONTAINER_NAME=ambari-db
   cat >> $1<<EOF
@@ -118,6 +134,7 @@ $CONTAINER_NAME:
 
 EOF
 }
+
 gen-ambari-server-yml(){
   CONTAINER_NAME=ambari-server
   cat >> $1<<EOF
@@ -162,7 +179,7 @@ $CONTAINER_NAME:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
-    - "$HOME/tmp/docker/ambari-agents/ambari-agent-$i:/var/lib/ambari-agent/tmp"
+    - "$HOME/tmp/docker/ambari-agents/ambari-agent-$i/log:/var/log/ambari-agent"
   command: -c '/scripts/runAgent.sh'
 
 EOF
@@ -186,7 +203,6 @@ $CONTAINER_NAME:
 EOF
 }
 
-
 gen-compose-yml(){
   echo "Generating compose file: $1"
   if [ -f  "$1" ]
@@ -206,11 +222,13 @@ gen-compose-yml(){
   echo "Compose file: $1 ready!"
 }
 
+
 main() {
-  generate-dev-env-profile
   set-project-path
+  generate-dev-env-profile
   check-dev-env
   check-dev-docker-image
+  build-ambari-metrics-rpm
   build-ambari-agent-rpm
   gen-compose-yml docker-compose.yml
 }
