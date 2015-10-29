@@ -12,7 +12,10 @@
 #   limitations under the License.
 
 main() {
+  find /ambari/ambari-metrics/ambari-metrics-assembly/target/rpm -type f -name *.x86_64.rpm -print | xargs -n 1 -I rpm_file yum install -y rpm_file
+
   yum install -y /ambari/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64/ambari-agent-*.x86_64.rpm
+
   ambari-agent reset ambari-server
   ambari-agent start -v
   /etc/init.d/sshd start
