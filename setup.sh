@@ -25,7 +25,6 @@ check-dev-env(){
 : ${DEV_KERBEROS_REALM:=AMBARI.APACHE.ORG}
 : ${DEV_KERBEROS_DOMAIN_REALM:=kerberos-server}
 : ${DEV_AMBARI_DB_DOCKER_IMAGE:=sequenceiq/ambari-dev-psql}
-: ${DEV_YUM_CACHE_DIR:="$HOME/tmp/docker/cache/yum"}
 }
 
 set-project-path() {

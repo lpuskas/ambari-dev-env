@@ -54,11 +54,17 @@ set-path() {
 }
 
 copy-libs-to-resources-dir() {
-  echo "Copy /scipts/libs/postgresql-9.3-1101-jdbc4.jar to /ambari/ambari-server/target/classes/postgres-jdbc-driver.jar"
+  echo "Add postgres jdbc driver: cp -f /scripts/libs/postgresql-9.3-1101-jdbc4.jar /ambari/ambari-server/target/classes/postgres-jdbc-driver.jar"
   cp -f /scripts/libs/postgresql-9.3-1101-jdbc4.jar /ambari/ambari-server/target/classes/postgres-jdbc-driver.jar
+
+  echo "Add mysql jdbc driver cp -f /scripts/libs/mysql-connector-java-5.1.37-bin.jar /ambari/ambari-server/target/classes/mysql-jdbc-driver.jar"
+  cp -f /scripts/libs/mysql-connector-java-5.1.37-bin.jar /ambari/ambari-server/target/classes/mysql-jdbc-driver.jar
+
+  # Derby
 
   echo "cp -f /ambari/ambari-server/target/DBConnectionVerification.jar /ambari/ambari-server/target/classes/DBConnectionVerification.jar"
   cp -f /ambari/ambari-server/target/DBConnectionVerification.jar /ambari/ambari-server/target/classes/DBConnectionVerification.jar
+
 }
 
 main() {
