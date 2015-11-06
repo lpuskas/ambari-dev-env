@@ -19,9 +19,8 @@ case "$1" in
           ;;
       schema-reload)
           echo "Reloading database ...";
-          docker-compose run -d --service-ports  --entrypoint="/scripts/reload-schema.sh"  ambari-db     
+          docker-compose run -d --service-ports  --entrypoint="/scripts/reload-schema.sh"  ambari-db
           ;;
-
       *)
 docker-compose up -d
 esac

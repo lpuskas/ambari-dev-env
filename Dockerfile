@@ -18,7 +18,7 @@ RUN yum clean all -y && yum update -y
 
 ## Install some basic utilities that aren't in the default image
 RUN yum clean all -y && yum update -y
-RUN yum -y install vim wget rpm-build sudo which telnet tar openssh-server openssh-clients ntp git python-devel python-setuptools httpd krb5-libs krb5-workstation yum-utils 
+RUN yum -y install vim wget rpm-build sudo which telnet tar openssh-server openssh-clients ntp git python-devel python-setuptools httpd krb5-libs krb5-workstation yum-utils createrepo yum-plugin-priorities
 
 # phantomjs dependency
 RUN yum -y install fontconfig freetype libfreetype.so.6 libfontconfig.so.1 libstdc++.so.6
