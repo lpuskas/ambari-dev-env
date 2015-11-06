@@ -24,7 +24,6 @@ check-dev-env(){
 : ${DEV_KERBEROS_DOCKER_IMAGE:=sequenceiq/kerberos}
 : ${DEV_KERBEROS_REALM:=AMBARI.APACHE.ORG}
 : ${DEV_KERBEROS_DOMAIN_REALM:=kerberos-server}
-: ${DEV_AMBARI_DB_DOCKER_IMAGE:=sequenceiq/ambari-dev-psql}
 }
 
 set-project-path() {
@@ -110,6 +109,36 @@ build-ambari-metrics-rpm() {
       $DEV_DOCKER_IMAGE \
       -c 'mvn clean package -Dbuild-rpm -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
   fi
+}
+
+create-yum-repo-mirror() {
+  # yum repo id to mirror
+  repoid=$1
+
+  # url thr points to source repo file to be mirrored (e.g. http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo)
+  repo_source_url=$2
+
+  repos_dir="$HOME/tmp/docker/repos"
+
+  echo "Syncing yum repo $repoid from $repo_source_url to $repos_dir ..."
+
+  docker run \
+      --rm --privileged \
+      -v "$repos_dir:/tmp" --entrypoint=/bin/bash \
+      -w /tmp \
+      $DEV_DOCKER_IMAGE \
+      -c "wget $repo_source_url -O /etc/yum.repos.d/$repoid.repo && reposync -n -p /tmp -r HDP-UTILS-* -r $repoid && ls -d * | xargs -n 1 -I repo_dir createrepo --update repo_dir"
+
+  # done with syncing the repo, now start a conatiner with httpd pointing to repos directory
+  CONTAINER_NAME=yum-repos
+
+  docker run \
+      -d \
+      -v "$repos_dir:/var/www/html/repos" --entrypoint=/bin/bash \
+      --name "$CONTAINER_NAME" --hostname "$CONTAINER_NAME" \
+      -p 80:80 \
+      $DEV_DOCKER_IMAGE \
+      -c 'httpd -DFOREGROUND'
 }
 
 gen-local-db-container-yml(){
@@ -223,13 +252,26 @@ gen-compose-yml(){
 
 
 main() {
-  set-project-path
-  generate-dev-env-profile
-  check-dev-env
-  check-dev-docker-image
   build-ambari-metrics-rpm
   build-ambari-agent-rpm
   gen-compose-yml docker-compose.yml
 }
 
-main "$@"
+set-project-path
+generate-dev-env-profile
+check-dev-env
+check-dev-docker-image
+
+
+case "$1" in
+  repo-mirror)
+     repoid=$2
+     repo_source_url=$3
+     echo "Setting up Yum repo mirror for repoid=$repoid"
+
+     create-yum-repo-mirror "$repoid" "$repo_source_url"
+     ;;
+
+  *)
+    main "$@"
+esac

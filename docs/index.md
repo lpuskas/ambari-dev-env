@@ -28,3 +28,11 @@ The following software components need to be installed:
 4. run the ```./startDevEnv.sh```
 
 5. you remotely debug the code from your IDE
+
+### Set up local mirror for Yum repos
+run ```./setup.sh repo-mirror repoid repo_source_url```
+
+`e.g. ./setup.sh repo-mirror HDP-2.3.2.0 http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo will setup a mirror for HDP-2.3.2.0`
+
+### Using repos from local mirror
+Specify http://yum-repos/repos/HDP-2.3.2.0 and http://yum-repos/repos/HDP-UTILS-1.1.0.20 as the URL for the HDP repositories for the desired os type when deploying the cluster.
