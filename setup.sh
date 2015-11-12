@@ -24,6 +24,7 @@ check-dev-env(){
 : ${DEV_KERBEROS_DOCKER_IMAGE:=sequenceiq/kerberos}
 : ${DEV_KERBEROS_REALM:=AMBARI.APACHE.ORG}
 : ${DEV_KERBEROS_DOMAIN_REALM:=kerberos-server}
+: ${DEV_AMBARI_PASSPHRASE:=DEV}
 }
 
 set-project-path() {
@@ -58,8 +59,8 @@ DEV_NUMBER_OF_AGENTS=3
 # Debug port of ambari server
 DEV_AMBARI_SERVER_DEBUG_PORT=5005
 
-# The location of the Yum cache
-#DEV_YUM_CACHE_DIR
+# Custom pass phrase to be used for signing agent certificates by Ambari in case of 2-way ssl communicarion
+DEV_AMBARI_PASSPHRASE=DEV
 
 
 EOF
@@ -175,6 +176,7 @@ $CONTAINER_NAME:
     - "8080:8080"
   environment:
     - SERVER_VERSION=$DEV_AMBARI_SERVER_VERSION
+    - AMBARI_PASSPHRASE=$DEV_AMBARI_PASSPHRASE
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
