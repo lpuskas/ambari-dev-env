@@ -12,7 +12,7 @@
 #   limitations under the License.
 
 
-ambari-server-start() {
+ambari-dev-server-start() {
   export CONTAINER_IP=$(hostname -i)
   echo "Container IP address": $CONTAINER_IP
 
@@ -26,15 +26,41 @@ ambari-server-start() {
     org.apache.ambari.server.controller.AmbariServer
 }
 
+ambari-setup () {
+  if [ "$1" = "local" ]
+    then
+      yum -y install /ambari/ambari-server/target/rpm/ambari-server/RPMS/x86_64/ambari-server-*.x86_64.rpm
+  else
+      cd /etc/yum.repos.d
+      wget $1
+      yum -y install ambari-server
+  fi
+  ambari-server setup -s
+}
+
+ambari-server-start() {
+  ambari-server start -g
+  while true; do
+    sleep 3
+    tail -f /var/log/ambari-server/ambari-server.log
+  done
+}
+
 main() {
-  source /scripts/common-server-functions.sh
-  cd /ambari/ambari-server
-  generate-classpath
-  set-path
-  setup-security-config
-  create-version-file
-  copy-libs-to-resources-dir
-  ambari-server-start
+  if [ ! -n "$1" ]
+    then
+      source /scripts/common-server-functions.sh
+      cd /ambari/ambari-server
+      generate-classpath
+      set-path
+      setup-security-config
+      create-version-file
+      copy-libs-to-resources-dir
+      ambari-dev-server-start
+  else
+    ambari-setup $1
+    ambari-server-start
+  fi
 }
 
 main "$@"

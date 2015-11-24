@@ -96,6 +96,22 @@ build-ambari-agent-rpm() {
   fi
 }
 
+build-ambari-server-rpm() {
+  if [ "$(ls $DEV_AMBARI_PROJECT_DIR/ambari-server/target/rpm/ambari-server/RPMS/x86_64 | wc -l)" -ge "1" ]
+  then
+    echo "Ambari server rpm found."
+  else
+    echo "Building Ambari Server rpm ..."
+    docker run \
+      --rm --privileged \
+      -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
+      -v $HOME/.m2/:/root/.m2 --entrypoint=/bin/bash \
+      -w /ambari/ambari-server \
+      $DEV_DOCKER_IMAGE \
+      -c 'mvn clean package rpm:rpm -Dstack.distribution=HDP -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
+  fi
+}
+
 build-ambari-metrics-rpm() {
   if [ "$(ls $DEV_AMBARI_PROJECT_DIR/ambari-metrics/ambari-metrics-assembly/target/rpm  | wc -l)" -ge "1" ]
   then
@@ -189,7 +205,7 @@ $CONTAINER_NAME:
     - "$HOME/tmp/docker/ambari-server/ssl-keys:/ssl-keys/ambari-server"
   image: $DEV_DOCKER_IMAGE
   entrypoint: ["/bin/sh"]
-  command: -c '/scripts/runServer.sh'
+  command: -c '/scripts/runServer.sh $DEV_AMBARI_REPO_URL'
 
 EOF
 }
@@ -210,7 +226,7 @@ $CONTAINER_NAME:
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
     - "$HOME/tmp/docker/ambari-agents/ambari-agent-$i/log:/var/log/ambari-agent"
-  command: -c '/scripts/runAgent.sh'
+  command: -c '/scripts/runAgent.sh $DEV_AMBARI_REPO_URL'
 
 EOF
 }
@@ -256,6 +272,10 @@ gen-compose-yml(){
 main() {
   build-ambari-metrics-rpm
   build-ambari-agent-rpm
+  if [ "$1" = "build-server-rpm" ]
+    then
+      build-ambari-server-rpm
+  fi
   gen-compose-yml docker-compose.yml
 }
 
