@@ -92,7 +92,7 @@ build-ambari-agent-rpm() {
       -v $HOME/.m2/:/root/.m2 --entrypoint=/bin/bash \
       -w /ambari/ambari-agent \
       $DEV_DOCKER_IMAGE \
-      -c 'mvn clean package rpm:rpm -Dstack.distribution=HDP -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
+      -c 'mvn package rpm:rpm -Dstack.distribution=HDP -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
   fi
 }
 
@@ -124,7 +124,7 @@ build-ambari-metrics-rpm() {
       -v $HOME/.m2/:/root/.m2 --entrypoint=/bin/bash \
       -w /ambari/ambari-metrics \
       $DEV_DOCKER_IMAGE \
-      -c 'mvn clean package -Dbuild-rpm -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
+      -c 'mvn package -Dbuild-rpm -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
   fi
 }
 
@@ -193,6 +193,8 @@ $CONTAINER_NAME:
   environment:
     - SERVER_VERSION=$DEV_AMBARI_SERVER_VERSION
     - AMBARI_PASSPHRASE=$DEV_AMBARI_PASSPHRASE
+    - PYTHONPATH=/ambari/ambari-common/src/main/python:/ambari/ambari-server/src/main/python
+    - AMBARI_CONF_DIR=/ambari-server-conf
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"

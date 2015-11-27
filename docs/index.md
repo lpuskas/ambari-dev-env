@@ -32,7 +32,16 @@ The following software components need to be installed:
 ### Set up local mirror for Yum repos
 run ```./setup.sh repo-mirror repoid repo_source_url```
 
-`e.g. ./setup.sh repo-mirror HDP-2.3.2.0 http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo will setup a mirror for HDP-2.3.2.0`
+e.g. `./setup.sh repo-mirror HDP-2.3.2.0 http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo will setup a mirror for HDP-2.3.2.0`
 
 ### Using repos from local mirror
 Specify http://yum-repos/repos/HDP-2.3.2.0 and http://yum-repos/repos/HDP-UTILS-1.1.0.20 as the URL for the HDP repositories for the desired os type when deploying the cluster.
+
+
+### Ambari server command line
+Ambari server command line functions can be reached through ambari-server.py python script within ambari server docker container
+
+1. Start a bash session in a running ambari server container ```docker exec -it ambari-server bash```
+2. Run the desired ambari server command line function in the container
+
+e.g. to refresh stack hash codes run `python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash`
