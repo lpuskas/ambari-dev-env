@@ -25,6 +25,7 @@ check-dev-env(){
 : ${DEV_KERBEROS_REALM:=AMBARI.APACHE.ORG}
 : ${DEV_KERBEROS_DOMAIN_REALM:=kerberos-server}
 : ${DEV_AMBARI_PASSPHRASE:=DEV}
+: ${DEV_AMBARI_SECURITY_MASTER_KEY:=@mb@r1-m@st3r-k3y}
 }
 
 set-project-path() {
@@ -61,6 +62,9 @@ DEV_AMBARI_SERVER_DEBUG_PORT=5005
 
 # Custom pass phrase to be used for signing agent certificates by Ambari in case of 2-way ssl communicarion
 DEV_AMBARI_PASSPHRASE=DEV
+
+# Custom Ambari server master key
+#DEV_AMBARI_SECURITY_MASTER_KEY=
 
 
 EOF
@@ -195,6 +199,7 @@ $CONTAINER_NAME:
     - AMBARI_PASSPHRASE=$DEV_AMBARI_PASSPHRASE
     - PYTHONPATH=/ambari/ambari-common/src/main/python:/ambari/ambari-server/src/main/python
     - AMBARI_CONF_DIR=/ambari-server-conf
+    - AMBARI_SECURITY_MASTER_KEY=$DEV_AMBARI_SECURITY_MASTER_KEY
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
