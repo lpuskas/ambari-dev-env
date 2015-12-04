@@ -23,7 +23,7 @@ main() {
     yum -y install ambari-metrics ambari-agent
   fi
 
-  ambari-agent reset ambari-server
+  ambari-agent reset $AMBARI_SERVER_HOSTNAME
   ambari-agent start -v
   /etc/init.d/sshd start
   while true; do
