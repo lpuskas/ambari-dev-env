@@ -14,9 +14,9 @@
 main() {
   if [ ! -n "$1" ] || [ "$1" = "local" ]
     then
-      find /ambari/ambari-metrics/ambari-metrics-assembly/target/rpm -type f -name *.x86_64.rpm -print | xargs -n 1 -I rpm_file yum install -y rpm_file
+      find /ambari/ambari-metrics/ambari-metrics-assembly/target/rpm -type f -name *.x86_64.rpm -print0 | xargs -0 yum install --disableplugin=fastestmirror -y
 
-      yum install -y /ambari/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64/ambari-agent-*.x86_64.rpm
+      yum --disableplugin=fastestmirror install -y /ambari/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64/ambari-agent-*.x86_64.rpm
   else
     cd /etc/yum.repos.d
     wget $1
