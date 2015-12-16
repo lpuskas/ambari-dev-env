@@ -15,7 +15,7 @@ echo "Starting the dev environment ..."
 case "$1" in
       schema-upgrade)
           echo "Starting schema upgrade ...";
-          docker-compose run -d --service-ports --entrypoint="/scripts/upgradeSchema.sh" ambari-server -c "cc"
+          docker-compose run -d --service-ports --entrypoint="/scripts/upgrade-schema.sh" ambari-server -c "cc"
           ;;
       schema-reload)
           echo "Reloading database ...";
