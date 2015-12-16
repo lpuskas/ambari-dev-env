@@ -57,3 +57,8 @@ RUN npm install -g brunch@1.7.17
 ADD container/UnlimitedJCEPolicyJDK7.zip /tmp/
 RUN unzip -o -j -q /tmp/UnlimitedJCEPolicyJDK7.zip -d $JAVA_HOME/jre/lib/security/
 RUN rm -rf /tmp/UnlimitedJCEPolicyJDK7.zip
+
+# Install consul
+RUN wget -O /tmp/conzul.zip https://releases.hashicorp.com/consul/0.6.0/consul_0.6.0_linux_amd64.zip
+RUN unzip -o -j -q /tmp/conzul.zip -d /bin
+RUN rm -f /tmp/conzul.zip
