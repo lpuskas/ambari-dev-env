@@ -22,8 +22,8 @@ check-dev-env(){
 : ${DEV_AMBARI_SERVER_VERSION:="2.0.0.0"}
 : ${DEV_AMBARI_SERVER_DEBUG_PORT:=5005}
 : ${DEV_KERBEROS_DOCKER_IMAGE:=sequenceiq/kerberos}
-: ${DEV_KERBEROS_REALM:=AMBARI.APACHE.ORG}
-: ${DEV_KERBEROS_DOMAIN_REALM:=kerberos-server}
+: ${DEV_KERBEROS_REALM:=DEV.LOCAL}
+: ${DEV_KERBEROS_DOMAIN_REALM:=node.dc1.consul}
 : ${DEV_AMBARI_PASSPHRASE:=DEV}
 : ${DEV_AMBARI_SECURITY_MASTER_KEY:=@mb@r1-m@st3r-k3y}
 }
@@ -190,7 +190,7 @@ gen-ambari-server-yml(){
 $CONTAINER_NAME:
   privileged: true
   container_name: $CONTAINER_NAME
-  hostname: $CONTAINER_NAME
+  hostname: $CONTAINER_NAME.node.dc1.consul
   ports:
     - "$DEV_AMBARI_SERVER_DEBUG_PORT:50100"
     - "8080:8080"
@@ -210,6 +210,11 @@ $CONTAINER_NAME:
     - "$HOME/tmp/docker/ambari-server/logs:/logs/ambari-server"
     - "$HOME/tmp/docker/ambari-server/keytabs:/keytabs/ambari-server"
     - "$HOME/tmp/docker/ambari-server/ssl-keys:/ssl-keys/ambari-server"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR/consul.json:/etc/consul.json"
+  dns: 0.0.0.0
+  links:
+    - ambari-db
+    - kerberos-server
   image: $DEV_DOCKER_IMAGE
   entrypoint: ["/bin/sh"]
   command: -c '/scripts/runServer.sh $DEV_AMBARI_REPO_URL'
@@ -223,16 +228,21 @@ gen-ambari-agent-yml(){
 $CONTAINER_NAME:
   privileged: true
   container_name: $CONTAINER_NAME
-  hostname: $CONTAINER_NAME
+  hostname: $CONTAINER_NAME.node.dc1.consul
   image: $DEV_DOCKER_IMAGE
+  dns: 0.0.0.0
+  links:
+    - ambari-server
+    - kerberos-server
   environment:
-    - AMBARI_SERVER_HOSTNAME=ambari-server
+    - AMBARI_SERVER_HOSTNAME=ambari-server.node.dc1.consul
   entrypoint: ["/bin/sh"]
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
     - "$HOME/tmp/docker/ambari-agents/ambari-agent-$i/log:/var/log/ambari-agent"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR/consul.json:/etc/consul.json"
   command: -c '/scripts/runAgent.sh $DEV_AMBARI_REPO_URL'
 
 EOF

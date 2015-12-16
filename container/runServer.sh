@@ -13,20 +13,19 @@
 
 
 ambari-dev-server-start() {
-  export CONTAINER_IP=$(hostname -i)
-  echo "Container IP address": $CONTAINER_IP
+ export CONTAINER_IP=$(hostname -i)
 
-  echo "Refreshing stack hash codes and starting the application.."
-  python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash & \
-  java \
+ echo "Container IP address": $CONTAINER_IP
+
+ echo "Refreshing stack hash codes and starting the application.."
+ python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash & \
+ java \
     -Dfile.encoding=UTF-8 \
     -Dlog4j.configuration=file:/ambari-server-conf/log4j.properties \
     -Xmx2048m -Xms256m \
     -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=50100 \
     -classpath $(cat /tmp/cp.txt):target/classes:/ambari-server-conf:/ambari/ambari-views/target \
     org.apache.ambari.server.controller.AmbariServer
-
-
 
 }
 
@@ -51,6 +50,9 @@ ambari-server-start() {
 }
 
 main() {
+  echo "Registering $HOSTNAME consul node with consul cluster"
+  consul agent -config-file=/etc/consul.json -server -bootstrap -node=$(hostname -s) -advertise=$(hostname -i) -client=0.0.0.0 -recursor=8.8.8.8 -recursor=192.168.0.1 &
+
   if [ ! -n "$1" ]
     then
       source /scripts/common-server-functions.sh
