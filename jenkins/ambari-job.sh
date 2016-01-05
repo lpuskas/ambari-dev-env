@@ -44,6 +44,7 @@ execute-jenkins-job(){
 
   docker run \
     --rm --privileged \
+    --net="host" \
     -v $AMBARI_DEV_JENKINS_TMP_DIR/ambari/:/ambari \
     -v $AMBARI_DEV_PERSISTENT_M2_REPO:/root/.m2 \
     --entrypoint=/bin/bash \
