@@ -7,6 +7,7 @@ AMBARI_DEV_DOCKER_IMAGE=ambari/docker-dev
 
 # JENKINS_HOME is a builtin var
 AMBARI_DEV_PERSISTENT_M2_REPO=$JENKINS_HOME/maven-repo
+AMBARI_DEV_PERSISTENT_NODE_REPO=$JENKINS_HOME/node-repo
 AMBARI_DEV_JENKINS_TMP_DIR=$WORKSPACE/tmp
 
 # maven commands
@@ -47,6 +48,7 @@ execute-jenkins-job(){
     --net="host" \
     -v $AMBARI_DEV_JENKINS_TMP_DIR/ambari/:/ambari \
     -v $AMBARI_DEV_PERSISTENT_M2_REPO:/root/.m2 \
+    -v $AMBARI_DEV_PERSISTENT_NODE_REPO:/root/.npm \
     --entrypoint=/bin/bash \
     -w /ambari/$AMBARI_DEV_MODULE \
     "$AMBARI_DEV_DOCKER_IMAGE" \
