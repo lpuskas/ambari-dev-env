@@ -60,7 +60,7 @@ DEV_NUMBER_OF_AGENTS=3
 # Debug port of ambari server
 DEV_AMBARI_SERVER_DEBUG_PORT=5005
 
-# Custom pass phrase to be used for signing agent certificates by Ambari in case of 2-way ssl communicarion
+# Custom pass phrase to be used for signing agent certificates by Ambari in case of 2-way ssl communication
 DEV_AMBARI_PASSPHRASE=DEV
 
 # Custom Ambari server master key
@@ -211,7 +211,8 @@ $CONTAINER_NAME:
     - "$HOME/tmp/docker/ambari-server/keytabs:/keytabs/ambari-server"
     - "$HOME/tmp/docker/ambari-server/ssl-keys:/ssl-keys/ambari-server"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/consul.json:/etc/consul.json"
-  dns: 0.0.0.0
+  dns:
+    - 0.0.0.0
   links:
     - ambari-db
     - kerberos-server
@@ -230,7 +231,8 @@ $CONTAINER_NAME:
   container_name: $CONTAINER_NAME
   hostname: $CONTAINER_NAME.node.dc1.consul
   image: $DEV_DOCKER_IMAGE
-  dns: 0.0.0.0
+  dns:
+    - 0.0.0.0
   links:
     - ambari-server
     - kerberos-server
