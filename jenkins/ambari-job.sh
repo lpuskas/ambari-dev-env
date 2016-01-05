@@ -1,9 +1,11 @@
 #!/bin/bash -a
 
+# the feature branch the job is operating on
+: ${AMBARI_DEV_FEATURE_BRANCH:="trunk"}
 AMBARI_DEV_GIT_REPO=https://github.com/sequenceiq/ambari.git
-AMBARI_DEV_FEATURE_BRANCH=trunk
 AMBARI_DEV_DOCKER_IMAGE=ambari/docker-dev
 
+# JENKINS_HOME is a builtin var
 AMBARI_DEV_PERSISTENT_M2_REPO=$JENKINS_HOME/maven-repo
 AMBARI_DEV_JENKINS_TMP_DIR=$WORKSPACE/tmp
 
