@@ -11,7 +11,7 @@ AMBARI_DEV_JENKINS_TMP_DIR=$WORKSPACE/tmp
 
 # maven commands
 AMBARI_DEV_MVN_RPM_COMMAND='mvn clean package rpm:rpm -Dstack.distribution=HDP -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python>=2.6"'
-AMBARI_DEV_MVN_INSTALL_COMMAND='mvn clean install -U -DskipTests -DskipPythonTests'
+AMBARI_DEV_MVN_INSTALL_COMMAND='mvn clean install -U -DskipTests -DskipPythonTests -Dmaven.clover.skip=true -Dfindbugs.skip=true'
 AMBARI_DEV_MVN_TEST_COMMAND="mvn test -DskipPythonTests"
 
 
@@ -44,6 +44,7 @@ execute-jenkins-job(){
 
   docker run \
     --rm --privileged \
+    --net="host" \
     -v $AMBARI_DEV_JENKINS_TMP_DIR/ambari/:/ambari \
     -v $AMBARI_DEV_PERSISTENT_M2_REPO:/root/.m2 \
     --entrypoint=/bin/bash \
@@ -58,7 +59,6 @@ install-all(){
   execute-jenkins-job ambari-web $AMBARI_DEV_MVN_INSTALL_COMMAND
   execute-jenkins-job ambari-server $AMBARI_DEV_MVN_INSTALL_COMMAND
   execute-jenkins-job ambari-agent $AMBARI_DEV_MVN_INSTALL_COMMAND
-  execute-jenkins-job ambari-views $AMBARI_DEV_MVN_INSTALL_COMMAND
 }
 
 rpm-all(){
