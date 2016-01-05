@@ -57,6 +57,7 @@ install-all(){
   execute-jenkins-job ambari-web $AMBARI_DEV_MVN_INSTALL_COMMAND
   execute-jenkins-job ambari-server $AMBARI_DEV_MVN_INSTALL_COMMAND
   execute-jenkins-job ambari-agent $AMBARI_DEV_MVN_INSTALL_COMMAND
+  execute-jenkins-job ambari-views $AMBARI_DEV_MVN_INSTALL_COMMAND
 }
 
 rpm-all(){
