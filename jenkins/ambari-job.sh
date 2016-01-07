@@ -13,12 +13,12 @@ AMBARI_DEV_JENKINS_TMP_DIR=$WORKSPACE/tmp
 # maven commands
 AMBARI_DEV_MVN_RPM_COMMAND='mvn clean package rpm:rpm -Dstack.distribution=HDP -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python>=2.6"'
 AMBARI_DEV_MVN_INSTALL_COMMAND='mvn clean install -U -DskipTests -DskipPythonTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -X'
-AMBARI_DEV_MVN_TEST_COMMAND="mvn test -DskipPythonTests"
+AMBARI_DEV_MVN_TEST_COMMAND="mvn test -DskipPythonTests -projects ambari-server"
 
 
 docker-build-dev-image(){
   if [[ "$(docker images -q $AMBARI_DEV_DOCKER_IMAGE 2> /dev/null)" == "" ]]; then
-    echo "Building the dev image: $AMBARI_DEV_DOCKER_IMAGE "
+    echo "Building the dev image: $AMBARI_DEV_DOCKER_IMAGE"
     docker build -t $AMBARI_DEV_DOCKER_IMAGE .
   fi
 }
@@ -50,7 +50,7 @@ execute-jenkins-job(){
     -v $AMBARI_DEV_PERSISTENT_M2_REPO:/root/.m2 \
     -v $AMBARI_DEV_PERSISTENT_NODE_REPO:/root/.npm \
     --entrypoint=/bin/bash \
-    -w /ambari/$AMBARI_DEV_MODULE \
+    -w /ambari/ \
     "$AMBARI_DEV_DOCKER_IMAGE" \
     -c "$MVN_CMD"
 }
