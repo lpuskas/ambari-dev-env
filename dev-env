@@ -1,4 +1,4 @@
-#!/usr/bin/env bash +a
+#!/bin/sh
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #   You may obtain a copy of the License at
@@ -11,8 +11,15 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-echo "Starting the dev environment ..."
 case "$1" in
+      setup)
+          echo "Setting up dev env ...";
+          ./setup.sh
+          ;;
+      start)
+          echo "Starting dev env ..."
+          docker-compose up -d
+          ;;
       schema-upgrade)
           echo "Starting schema upgrade ...";
           docker-compose run -d --service-ports --entrypoint="/scripts/upgrade-schema.sh" ambari-server -c "cc"
@@ -21,10 +28,14 @@ case "$1" in
           echo "Reloading database ...";
           docker-compose run -d --service-ports  --entrypoint="/scripts/reload-schema.sh"  ambari-db
           ;;
+      yum-repo-start)
+          echo "Starting local yum repo mirror ...";
+          docker-compose -f yum-repo.yml up -d
+          ;;
+      yum-repo-setup)
+          echo "Setting up local yum repo mirror ...";
+          source .dev-profile
+          ./bin/yum-mirror.sh
+          ;;
       *)
-docker-compose up -d
 esac
-
-
-
-echo "Dev env started."

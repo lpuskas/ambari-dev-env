@@ -26,6 +26,7 @@ check-dev-env(){
 : ${DEV_KERBEROS_DOMAIN_REALM:=node.dc1.consul}
 : ${DEV_AMBARI_PASSPHRASE:=DEV}
 : ${DEV_AMBARI_SECURITY_MASTER_KEY:=@mb@r1-m@st3r-k3y}
+: ${DEV_YUM_REPO_DIR:="$HOME/tmp/docker/repos"}
 }
 
 set-project-path() {
@@ -84,82 +85,25 @@ check-dev-docker-image() {
   fi
 }
 
-build-ambari-agent-rpm() {
-  if [ "$(ls $DEV_AMBARI_PROJECT_DIR/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64 | wc -l)" -ge "1" ]
+build-rpm(){
+  DEV_MODULE=$1
+  DEV_MVN_RPM_COMMAND="mvn package -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver='python>=2.6'"
+
+  if [ ! -z $DEV_MODULE ]
   then
-    echo "Ambari agent rpm found."
-  else
-    echo "Building Ambari Agent rpm ..."
-    docker run \
-      --rm --privileged \
-      -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
-      -v $HOME/.m2/:/root/.m2 --entrypoint=/bin/bash \
-      -w /ambari/ambari-agent \
-      $DEV_DOCKER_IMAGE \
-      -c 'mvn package rpm:rpm -Dstack.distribution=HDP -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
+    DEV_MVN_RPM_COMMAND="$DEV_MVN_RPM_COMMAND -projects $DEV_MODULE"
   fi
-}
 
-build-ambari-server-rpm() {
-  if [ "$(ls $DEV_AMBARI_PROJECT_DIR/ambari-server/target/rpm/ambari-server/RPMS/x86_64 | wc -l)" -ge "1" ]
-  then
-    echo "Ambari server rpm found."
-  else
-    echo "Building Ambari Server rpm ..."
-    docker run \
-      --rm --privileged \
-      -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
-      -v $HOME/.m2/:/root/.m2 --entrypoint=/bin/bash \
-      -w /ambari/ambari-server \
-      $DEV_DOCKER_IMAGE \
-      -c 'mvn clean package rpm:rpm -Dstack.distribution=HDP -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
-  fi
-}
-
-build-ambari-metrics-rpm() {
-  if [ "$(ls $DEV_AMBARI_PROJECT_DIR/ambari-metrics/ambari-metrics-assembly/target/rpm  | wc -l)" -ge "1" ]
-  then
-    echo "Ambari metrics rmp found."
-  else
-    echo "Building Ambari Metrics rpm ..."
-    docker run \
-      --rm --privileged \
-      -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
-      -v $HOME/.m2/:/root/.m2 --entrypoint=/bin/bash \
-      -w /ambari/ambari-metrics \
-      $DEV_DOCKER_IMAGE \
-      -c 'mvn package -Dbuild-rpm -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python >= 2.6"'
-  fi
-}
-
-create-yum-repo-mirror() {
-  # yum repo id to mirror
-  repoid=$1
-
-  # url thr points to source repo file to be mirrored (e.g. http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo)
-  repo_source_url=$2
-
-  repos_dir="$HOME/tmp/docker/repos"
-
-  echo "Syncing yum repo $repoid from $repo_source_url to $repos_dir ..."
-
+  echo "Running command: [ $DEV_MVN_RPM_COMMAND ]"
   docker run \
-      --rm --privileged \
-      -v "$repos_dir:/tmp" --entrypoint=/bin/bash \
-      -w /tmp \
-      $DEV_DOCKER_IMAGE \
-      -c "wget $repo_source_url -O /etc/yum.repos.d/$repoid.repo && reposync -n -p /tmp -r HDP-UTILS-* -r $repoid && ls -d * | xargs -n 1 -I repo_dir createrepo --update repo_dir"
-
-  # done with syncing the repo, now start a conatiner with httpd pointing to repos directory
-  CONTAINER_NAME=yum-repos
-
-  docker run \
-      -d \
-      -v "$repos_dir:/var/www/html/repos" --entrypoint=/bin/bash \
-      --name "$CONTAINER_NAME" --hostname "$CONTAINER_NAME" \
-      -p 80:80 \
-      $DEV_DOCKER_IMAGE \
-      -c 'httpd -DFOREGROUND'
+    --rm \
+    --privileged \
+    --entrypoint=/bin/bash \
+    -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
+    -v $HOME/.m2/:/root/.m2 \
+    -w /ambari \
+    $DEV_DOCKER_IMAGE \
+    -c "$DEV_MVN_RPM_COMMAND"
 }
 
 gen-local-db-container-yml(){
@@ -287,32 +231,22 @@ gen-compose-yml(){
   echo "Compose file: $1 ready!"
 }
 
-
 main() {
-  build-ambari-metrics-rpm
-  build-ambari-agent-rpm
+  set-project-path
+  generate-dev-env-profile
+  check-dev-env
+  check-dev-docker-image
+
+  build-rpm "ambari-metrics"
+  build-rpm "ambari-agent"
+
   if [ "$1" = "build-server-rpm" ]
     then
-      build-ambari-server-rpm
+      build-rpm "ambari-server"
   fi
+
   gen-compose-yml docker-compose.yml
+
 }
 
-set-project-path
-generate-dev-env-profile
-check-dev-env
-check-dev-docker-image
-
-
-case "$1" in
-  repo-mirror)
-     repoid=$2
-     repo_source_url=$3
-     echo "Setting up Yum repo mirror for repoid=$repoid"
-
-     create-yum-repo-mirror "$repoid" "$repo_source_url"
-     ;;
-
-  *)
-    main "$@"
-esac
+main "$@"
