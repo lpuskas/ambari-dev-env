@@ -18,15 +18,30 @@ ambari-dev-server-start() {
  echo "Container IP address": $CONTAINER_IP
 
  echo "Refreshing stack hash codes and starting the application.."
- python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash & \
+ python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash &
+
  java \
     -Dfile.encoding=UTF-8 \
     -Dlog4j.configuration=file:/ambari-server-conf/log4j.properties \
     -Xmx2048m -Xms256m \
     -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=50100 \
     -classpath $(cat /tmp/cp.txt):target/classes:/ambari-server-conf:/ambari/ambari-views/target \
-    org.apache.ambari.server.controller.AmbariServer
+    org.apache.ambari.server.controller.AmbariServer &
 
+  SERVER_PID=$!
+  echo "Ambari server PID: [ $SERVER_PID ]"
+  if [ ! -d "/var/run/ambari-server" ]
+  then
+    mkdir /var/run/ambari-server
+  fi
+  
+  echo $SERVER_PID > /var/run/ambari-server/$(echo $SERVER_PID)
+
+  while [ ! -z $SERVER_PID ]
+  do
+    SERVER_PID=$(pgrep java)
+    sleep 10
+  done
 }
 
 ambari-setup () {
