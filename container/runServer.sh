@@ -34,8 +34,8 @@ ambari-dev-server-start() {
   then
     mkdir /var/run/ambari-server
   fi
-  
-  echo $SERVER_PID > /var/run/ambari-server/$(echo $SERVER_PID)
+
+  echo $SERVER_PID > /var/run/ambari-server/ambari-server.pid
 
   while [ ! -z $SERVER_PID ]
   do

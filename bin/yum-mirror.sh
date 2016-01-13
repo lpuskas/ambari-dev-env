@@ -15,7 +15,7 @@ setup(){
   : ${DEV_DOCKER_IMAGE:=ambari/docker-dev}
 
   # yum repo id to mirror
-  : ${REPO_ID:="DEV"}
+  : ${REPO_ID:="HDP-2.3.2.0"}
 
   # url that points to source repo file to be mirrored (e.g. http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo)
   : ${REPO_SOURCE_URL:="http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo"}
@@ -56,10 +56,38 @@ $DEV_YUM_CONTAINER_NAME:
 EOF
 }
 
+use-local-repo(){
+  B2D_IP=$(boot2docker ip)
+
+  cat <<EOF >$HOME/tmp/local_repo.json
+  {
+    "Repositories" : {
+      "base_url" : "http://$B2D_IP/repos/$REPO_ID",
+      "default_base_url" : "http://$B2D_IP/repos/$REPO_ID",
+      "latest_base_url" : "http://$B2D_IP/repos/$REPO_ID",
+      "mirrors_list" : null,
+      "os_type" : "redhat6",
+      "repo_id" : "HDP-2.3",
+      "repo_name" : "HDP",
+      "stack_name" : "HDP",
+      "stack_version" : "2.3"
+    }
+  }
+
+EOF
+  curl --verbose -u admin:admin -H "X-Requested-By:ambari" -X PUT -d @"$HOME/tmp/local_repo.json" http://$B2D_IP:8080/api/v1/stacks/HDP/versions/2.3/operating_systems/redhat6/repositories/$REPO_ID
+}
+
 main(){
   setup
-  create-yum-repo-mirror
-  gen-yum-repo-yml
+
+  if [ "$1" == "put-local-repo" ]
+  then
+    use-local-repo
+  else
+    create-yum-repo-mirror
+    gen-yum-repo-yml
+  fi
 }
 
 main "$@"
