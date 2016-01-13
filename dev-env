@@ -11,6 +11,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+
 case "$1" in
       setup)
           echo "Setting up dev env ...";
@@ -37,5 +38,21 @@ case "$1" in
           source .dev-profile
           ./bin/yum-mirror.sh
           ;;
+      use-local-yum-repo)
+          echo "Setting up local yum repo in ambari ...";
+          source .dev-profile
+          ./bin/yum-mirror.sh put-local-repo
+          ;;
+
       *)
+      echo "Available commands:
+      ./dev-env setup
+      ./dev-env start
+      ./dev-env schema-upgrade
+      ./dev-env schema-reload
+      ./dev-env yum-repo-setup
+      ./dev-env yum-repo-start
+      ./dev-env use-local-yum-repo
+      ./dev-env help
+      "
 esac
