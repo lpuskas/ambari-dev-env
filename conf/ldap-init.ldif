@@ -1,0 +1,16 @@
+
+
+dn: ou=hdp,dc=dev,dc=local
+objectClass: top
+objectClass: OrganizationalUnit
+ou: hdp
+
+dn: ou=people,ou=hdp,dc=dev,dc=local
+objectClass: top
+objectClass: OrganizationalUnit
+ou: people
+
+dn: ou=groups,ou=hdp,dc=dev,dc=local
+objectClass: top
+objectClass: OrganizationalUnit
+ou: groups
