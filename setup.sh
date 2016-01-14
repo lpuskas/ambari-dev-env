@@ -27,6 +27,8 @@ check-dev-env(){
 : ${DEV_AMBARI_PASSPHRASE:=DEV}
 : ${DEV_AMBARI_SECURITY_MASTER_KEY:=@mb@r1-m@st3r-k3y}
 : ${DEV_YUM_REPO_DIR:="$HOME/tmp/docker/repos"}
+: ${LDAP_BASE_DOMAIN:=dev.local}
+: ${LDAP_ROOTPASS:=s3cr3tpassw0rd}
 }
 
 set-project-path() {
@@ -66,6 +68,12 @@ DEV_AMBARI_PASSPHRASE=DEV
 
 # Custom Ambari server master key
 #DEV_AMBARI_SECURITY_MASTER_KEY=
+
+# The base domain in LDAP (this is the domain for the LDAP admin user cn=admin )
+# LDAP_BASE_DOMAIN=
+
+# Password for LDAP admin user
+# LDAP_ROOTPASS=
 
 
 EOF
