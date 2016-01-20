@@ -101,12 +101,12 @@ build-rpm(){
   fi
 
   DEV_MODULE=$1
-  DEV_MVN_RPM_COMMAND="mvn package -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver='python>=2.6'"
+  DEV_MVN_RPM_COMMAND="mvn package -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver='python >= 2.6'"
   container_workspace=/ambari
 
   case "$DEV_MODULE" in
     ambari-agent)
-        DEV_MVN_RPM_COMMAND="mvn package rpm:rpm -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver='python>=2.6'"
+        DEV_MVN_RPM_COMMAND="mvn package rpm:rpm -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver=\"python >= 2.6\""
         container_workspace="$container_workspace/$DEV_MODULE"
     ;;
     *)
