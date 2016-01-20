@@ -17,8 +17,16 @@ setup(){
   # yum repo id to mirror
   : ${REPO_ID:="HDP-2.3.2.0"}
 
+  # get stack version from REPO_ID
+  STACK_VERSION_MAJOR=$(echo "$REPO_ID" | grep -oP "HDP-\K[0-9]+")
+  STACK_VERSION_MINOR=$(echo "$REPO_ID" | grep -oP "HDP-[0-9]+\.\K[0-9]+")
+  STACK_VERSION_PATCH=$(echo "$REPO_ID" | grep -oP "HDP-[0-9]+\.[0-9]+\.\K[0-9]+")
+  STACK_VERSION_BUILD=$(echo "$REPO_ID" | grep -oP "HDP-[0-9]+\.[0-9]+\.[0-9]+\.\K.+")
+
+
+
   # url that points to source repo file to be mirrored (e.g. http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo)
-  : ${REPO_SOURCE_URL:="http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/hdp.repo"}
+  : ${REPO_SOURCE_URL:="http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/$STACK_VERSION_MAJOR.$STACK_VERSION_MINOR.$STACK_VERSION_PATCH.$STACK_VERSION_BUILD/hdp.repo"}
 
   # local repository location
   : ${DEV_YUM_REPO_DIR:="$HOME/tmp/docker/repos"}
@@ -34,7 +42,7 @@ create-yum-repo-mirror() {
       -v "$DEV_YUM_REPO_DIR:/tmp" \
       -w /tmp \
       $DEV_DOCKER_IMAGE \
-      -c "wget $REPO_SOURCE_URL -O /etc/yum.repos.d/$REPO_ID.repo && reposync -n -p /tmp -r HDP-UTILS-* -r $REPO_ID && ls -d * | xargs -n 1 -I repo_dir createrepo --update repo_dir"
+      -c "wget $REPO_SOURCE_URL -O /etc/yum.repos.d/$REPO_ID.repo && reposync -n -p /tmp -r HDP-UTILS-* -r $REPO_ID && ls -d * | egrep \"HDP-UTILS-.+|$REPO_ID$\" | xargs -n 1 -I repo_dir createrepo --update repo_dir"
 }
 
 gen-yum-repo-yml(){
@@ -67,15 +75,15 @@ use-local-repo(){
       "latest_base_url" : "http://$B2D_IP/repos/$REPO_ID",
       "mirrors_list" : null,
       "os_type" : "redhat6",
-      "repo_id" : "HDP-2.3",
+      "repo_id" : "HDP-$STACK_VERSION_MAJOR.$STACK_VERSION_MINOR",
       "repo_name" : "HDP",
       "stack_name" : "HDP",
-      "stack_version" : "2.3"
+      "stack_version" : "$STACK_VERSION_MAJOR.$STACK_VERSION_MINOR"
     }
   }
 
 EOF
-  curl --verbose -u admin:admin -H "X-Requested-By:ambari" -X PUT -d @"$HOME/tmp/local_repo.json" http://$B2D_IP:8080/api/v1/stacks/HDP/versions/2.3/operating_systems/redhat6/repositories/$REPO_ID
+  curl --verbose -u admin:admin -H "X-Requested-By:ambari" -X PUT -d @"$HOME/tmp/local_repo.json" http://$B2D_IP:8080/api/v1/stacks/HDP/versions/$STACK_VERSION_MAJOR.$STACK_VERSION_MINOR/operating_systems/redhat6/repositories/$REPO_ID
 }
 
 main(){
