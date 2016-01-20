@@ -94,13 +94,25 @@ check-dev-docker-image() {
 }
 
 build-rpm(){
+  if [ -z $1 ]
+  then
+    echo "No ambari module name provided!"
+    exit 1;
+  fi
+
   DEV_MODULE=$1
   DEV_MVN_RPM_COMMAND="mvn package -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver='python>=2.6'"
+  container_workspace=/ambari
 
-  if [ ! -z $DEV_MODULE ]
-  then
-    DEV_MVN_RPM_COMMAND="$DEV_MVN_RPM_COMMAND -projects $DEV_MODULE"
-  fi
+  case "$DEV_MODULE" in
+    ambari-agent)
+        DEV_MVN_RPM_COMMAND="mvn package rpm:rpm -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver='python>=2.6'"
+        container_workspace="$container_workspace/$DEV_MODULE"
+    ;;
+    *)
+        DEV_MVN_RPM_COMMAND="$DEV_MVN_RPM_COMMAND -projects $DEV_MODULE"
+  esac
+
 
   echo "Running command: [ $DEV_MVN_RPM_COMMAND ]"
   docker run \
@@ -109,7 +121,7 @@ build-rpm(){
     --entrypoint=/bin/bash \
     -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
     -v $HOME/.m2/:/root/.m2 \
-    -w /ambari \
+    -w $container_workspace \
     $DEV_DOCKER_IMAGE \
     -c "$DEV_MVN_RPM_COMMAND"
 }
