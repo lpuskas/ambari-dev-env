@@ -18,7 +18,7 @@ ambari-dev-server-start() {
  echo "Container IP address": $CONTAINER_IP
 
  echo "Refreshing stack hash codes and starting the application.."
- python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash &
+ python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash
 
  java \
     -Dfile.encoding=UTF-8 \
@@ -32,16 +32,20 @@ ambari-dev-server-start() {
   echo "Ambari server PID: [ $SERVER_PID ]"
   if [ ! -d "/var/run/ambari-server" ]
   then
+    echo "Creating folder: /var/run/ambari-server"
     mkdir /var/run/ambari-server
   fi
 
   echo $SERVER_PID > /var/run/ambari-server/ambari-server.pid
 
-  while [ ! -z $SERVER_PID ]
+  while [ ! -z "$SERVER_PID" ]
   do
     SERVER_PID=$(pgrep java)
+    echo "Ambari server PID: [ $SERVER_PID ]"
     sleep 10
   done
+
+  echo "exiting  ambari server $1"
 }
 
 ambari-setup () {
