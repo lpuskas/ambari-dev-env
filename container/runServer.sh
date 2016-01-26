@@ -28,7 +28,7 @@ ambari-dev-server-start() {
     -classpath $(cat /tmp/cp.txt):target/classes:/ambari-server-conf:/ambari/ambari-views/target \
     org.apache.ambari.server.controller.AmbariServer &
 
-  SERVER_PID=$!
+  SERVER_PID="$!"
   echo "Ambari server PID: [ $SERVER_PID ]"
   if [ ! -d "/var/run/ambari-server" ]
   then
@@ -38,11 +38,22 @@ ambari-dev-server-start() {
 
   echo $SERVER_PID > /var/run/ambari-server/ambari-server.pid
 
-  while [ ! -z "$SERVER_PID" ]
+  # tests for the existence of the process
+  kill -0 $SERVER_PID 2>/dev/null
+  server_runs="$?"
+
+  while [ "$server_runs" -lt 1 ]
   do
-    SERVER_PID=$(pgrep java)
-    echo "Ambari server PID: [ $SERVER_PID ]"
-    sleep 10
+    kill -0 $SERVER_PID 2>/dev/null
+    server_runs="$?"
+    if [ "$server_runs" -lt 1 ];
+    then
+      echo "Ambari Server is running"
+      sleep 10
+    else
+      echo "Ambari Server stopped"
+    fi
+
   done
 
   echo "exiting  ambari server $1"
