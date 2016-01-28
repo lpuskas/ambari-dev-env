@@ -102,7 +102,7 @@ build-rpm(){
 
   DEV_MODULE=$1
   DEV_MVN_RPM_COMMAND="mvn package -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver='python >= 2.6'"
-  container_workspace=/ambari
+  container_workspace="/ambari/$DEV_MODULE"
 
   case "$DEV_MODULE" in
     ambari-agent)
@@ -110,7 +110,7 @@ build-rpm(){
         container_workspace="$container_workspace/$DEV_MODULE"
     ;;
     *)
-        DEV_MVN_RPM_COMMAND="$DEV_MVN_RPM_COMMAND -projects $DEV_MODULE"
+        DEV_MVN_RPM_COMMAND="$DEV_MVN_RPM_COMMAND"
   esac
 
 
