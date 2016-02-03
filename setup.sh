@@ -102,26 +102,37 @@ build-rpm(){
 
   DEV_MODULE=$1
   DEV_MVN_RPM_COMMAND=""
+  DEV_RPM_EXISTS_COMMAND=""
   container_workspace="/ambari/$DEV_MODULE"
 
   case "$DEV_MODULE" in
     ambari-metrics)
+        DEV_RPM_EXISTS_CHECK_DIR="$DEV_AMBARI_PROJECT_DIR/$DEV_MODULE/ambari-metrics-assembly/target/rpm"
         DEV_MVN_RPM_COMMAND="mvn package -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver='python >= 2.6'"
     ;;
     *)
-        DEV_MVN_RPM_COMMAND="mvn package rpm:rpm -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver=\"python >= 2.6\""
+        DEV_RPM_EXISTS_CHECK_DIR="$DEV_AMBARI_PROJECT_DIR/$DEV_MODULE/target/rpm/$DEV_MODULE/RPMS/x86_64"
+        DEV_MVN_RPM_COMMAND="mvn package rpm:rpm -B -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -Dpython.ver=\"python >= 2.6\""
   esac
 
-  echo "Running command: [ $DEV_MVN_RPM_COMMAND ]"
-  docker run \
-    --rm \
-    --privileged \
-    --entrypoint=/bin/bash \
-    -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
-    -v $HOME/.m2/:/root/.m2 \
-    -w $container_workspace \
-    $DEV_DOCKER_IMAGE \
-    -c "$DEV_MVN_RPM_COMMAND"
+  echo -n "Build rpm for $DEV_MODULE ... "
+
+  if [ -d "$DEV_RPM_EXISTS_CHECK_DIR" ]
+  then
+    echo "Skipping due to [ -d $DEV_RPM_EXISTS_CHECK_DIR ] command returned true !"
+  else
+    echo "Running command: [ $DEV_MVN_RPM_COMMAND ]"
+    docker run \
+      --rm \
+      --privileged \
+      --entrypoint=/bin/bash \
+      -v $DEV_AMBARI_PROJECT_DIR/:/ambari:rw \
+      -v $HOME/.m2/:/root/.m2 \
+      -w $container_workspace \
+      $DEV_DOCKER_IMAGE \
+      -c "$DEV_MVN_RPM_COMMAND"
+  fi
+
 }
 
 gen-local-db-container-yml(){
