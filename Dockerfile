@@ -59,6 +59,10 @@ ADD container/UnlimitedJCEPolicyJDK7.zip /tmp/
 RUN unzip -o -j -q /tmp/UnlimitedJCEPolicyJDK7.zip -d $JAVA_HOME/jre/lib/security/
 RUN rm -rf /tmp/UnlimitedJCEPolicyJDK7.zip
 
+# Comment out  '/usr/lib/rpm/redhat/brp-python-hardlink' in '/usr/lib/rpm/redhat/macros'
+RUN sed -i -- 's/\/usr\/lib\/rpm\/redhat\/brp-python-hardlink/# \/usr\/lib\/rpm\/redhat\/brp-python-hardlink/g' /usr/lib/rpm/redhat/macros
+
+
 # Install consul
 RUN wget -O /tmp/conzul.zip https://releases.hashicorp.com/consul/0.6.0/consul_0.6.0_linux_amd64.zip
 RUN unzip -o -j -q /tmp/conzul.zip -d /bin

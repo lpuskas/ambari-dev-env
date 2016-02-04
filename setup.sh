@@ -126,7 +126,7 @@ build-rpm(){
       --rm \
       --privileged \
       --entrypoint=/bin/bash \
-      -v $DEV_AMBARI_PROJECT_DIR/:/ambari:rw \
+      -v $DEV_AMBARI_PROJECT_DIR/:/ambari \
       -v $HOME/.m2/:/root/.m2 \
       -w $container_workspace \
       $DEV_DOCKER_IMAGE \
