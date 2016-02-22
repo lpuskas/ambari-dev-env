@@ -12,7 +12,7 @@
 #   limitations under the License.
 
 echo "Creating the symlink"
-ln -s /ambari/ambari-server/src/main/resources/Ambari-DDL-Postgres-CREATE.sql /docker-entrypoint-initdb.d/amabri_schema_create.sql
+ln -s /ambari/ambari-server/target/classes/Ambari-DDL-Postgres-CREATE.sql /docker-entrypoint-initdb.d/amabri_schema_create.sql
 
 echo "Proceeding to start"
 /bin/bash docker-entrypoint.sh postgres
