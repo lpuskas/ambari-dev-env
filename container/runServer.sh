@@ -62,6 +62,7 @@ ambari-dev-server-start() {
 ambari-setup () {
   if [ "$1" = "local" ]
     then
+      echo "Installing from local target ..."
       yum -y install /ambari/ambari-server/target/rpm/ambari-server/RPMS/x86_64/ambari-server-*.x86_64.rpm
   else
       cd /etc/yum.repos.d

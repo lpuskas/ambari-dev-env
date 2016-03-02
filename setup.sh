@@ -147,7 +147,6 @@ $CONTAINER_NAME:
   environment:
     - POSTGRES_USER=ambari
     - POSTGRES_PASSWORD=bigdata
-  entrypoint: /scripts/reload-schema.sh
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$DEV_PROJECT_PATH/container:/scripts"
