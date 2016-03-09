@@ -15,7 +15,7 @@ setup(){
   : ${DEV_DOCKER_IMAGE:=ambari/docker-dev}
 
   # yum repo id to mirror
-  : ${REPO_ID:="HDP-2.3.2.0"}
+  : ${REPO_ID:="HDP-2.3.4.0"}
 
   # get stack version from REPO_ID
   STACK_VERSION_MAJOR=$(echo "$REPO_ID" | grep -oP "HDP-\K[0-9]+")
