@@ -13,7 +13,7 @@ AMBARI_DEV_JENKINS_TMP_DIR=$WORKSPACE/tmp
 # maven commands
 AMBARI_DEV_MVN_RPM_COMMAND='mvn clean package rpm:rpm -Dstack.distribution=HDP -Dmaven.clover.skip=true -Dfindbugs.skip=true -DskipTests -Dpython.ver="python>=2.6"'
 AMBARI_DEV_MVN_INSTALL_COMMAND='mvn clean install -U -DskipTests -DskipPythonTests -Dmaven.clover.skip=true -Dfindbugs.skip=true'
-AMBARI_DEV_MVN_TEST_COMMAND="mvn test -projects ambari-server -X"
+AMBARI_DEV_MVN_TEST_COMMAND="mvn test -projects ambari-server"
 
 
 docker-build-dev-image(){
@@ -38,19 +38,6 @@ git-checkout(){
   git checkout $AMBARI_DEV_FEATURE_BRANCH;
 }
 
-git-checkout-origin(){
-  # delete temporary folder if exists
-  if [ -d "$AMBARI_DEV_JENKINS_TMP_DIR" ]; then
-    sudo rm -rf $AMBARI_DEV_JENKINS_TMP_DIR/ambari
-  fi
-
-  # create the temporary working directory
-  mkdir $AMBARI_DEV_JENKINS_TMP_DIR
-  cd $AMBARI_DEV_JENKINS_TMP_DIR
-
-  git clone http://git-wip-us.apache.org/repos/asf/ambari.git;
-  cd ambari
-}
 
 execute-jenkins-job(){
   AMBARI_DEV_MODULE=$1
@@ -86,15 +73,15 @@ rpm-all(){
 }
 
 main (){
+
   docker-build-dev-image
+  git-checkout
 
   case $1 in
     install-all )
-      git-checkout-origin
       install-all
       ;;
     test-server )
-      git-checkout
       execute-jenkins-job ambari-server $AMBARI_DEV_MVN_TEST_COMMAND
       ;;
     rpm-all )
