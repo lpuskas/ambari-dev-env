@@ -172,6 +172,7 @@ $CONTAINER_NAME:
     - PYTHONPATH=/ambari/ambari-common/src/main/python:/ambari/ambari-server/src/main/python
     - AMBARI_CONF_DIR=/ambari-server-conf
     - AMBARI_SECURITY_MASTER_KEY=$DEV_AMBARI_SECURITY_MASTER_KEY
+    - ROOT=/
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
