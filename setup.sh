@@ -178,6 +178,7 @@ $CONTAINER_NAME:
     - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container:/scripts"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/ambari-server-conf"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/etc/ambari-server/conf"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
     - "$HOME/tmp/docker/ambari-server/tmp:/tmp/ambari-server"
     - "$HOME/tmp/docker/ambari-server/logs:/logs/ambari-server"
