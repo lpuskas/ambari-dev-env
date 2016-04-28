@@ -183,6 +183,7 @@ $CONTAINER_NAME:
     - "$HOME/tmp/docker/ambari-server/tmp:/tmp/ambari-server"
     - "$HOME/tmp/docker/ambari-server/logs:/logs/ambari-server"
     - "$HOME/tmp/docker/ambari-server/keytabs:/keytabs/ambari-server"
+    - "$HOME/tmp/docker/ambari-server/keytabs:/etc/security/keytabs"
     - "$HOME/tmp/docker/ambari-server/ssl-keys:/ssl-keys/ambari-server"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/consul.json:/etc/consul.json"
   dns:
