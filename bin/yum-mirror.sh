@@ -65,7 +65,7 @@ EOF
 }
 
 use-local-repo(){
-  B2D_IP=$(boot2docker ip)
+  B2D_IP=$(docker-machine ip test)
 
   cat <<EOF >$HOME/tmp/local_repo.json
   {
