@@ -1,14 +1,17 @@
 #!/usr/bin/env bash -a
 
-# 172.22.105.77	lpuskas-ha-6.novalocal	lpuskas-ha-6	lpuskas-ha-6.novalocal.
-# 172.22.105.76	lpuskas-ha-5.novalocal	lpuskas-ha-5	lpuskas-ha-5.novalocal.
-# 172.22.105.75	lpuskas-ha-4.novalocal	lpuskas-ha-4	lpuskas-ha-4.novalocal.
-# 172.22.105.73	lpuskas-ha-3.novalocal	lpuskas-ha-3	lpuskas-ha-3.novalocal.
-# 172.22.105.70	lpuskas-ha-2.novalocal	lpuskas-ha-2	lpuskas-ha-2.novalocal.
-# 172.22.105.7	lpuskas-ha-1.novalocal	lpuskas-ha-1	lpuskas-ha-1.novalocal.
+# 172.22.92.59	lpuskas-dev-2.openstacklocal	lpuskas-dev-2	lpuskas-dev-2.openstacklocal.
+# 172.22.92.58	lpuskas-dev-1.openstacklocal	lpuskas-dev-1	lpuskas-dev-1.openstacklocal
 
-hosts='172.22.105.77 172.22.105.76 172.22.105.75 172.22.105.73 172.22.105.70 172.22.105.7'
-server='172.22.105.7'
+172.22.123.191	lp-1600-1.openstacklocal	lp-1600-1	lp-1600-1.openstacklocal.
+
+*************** /etc/hosts info ****************
+172.22.86.30	lp-perf-1.openstacklocal	lp-perf-1	lp-perf-1.openstacklocal.
+************************************************
+
+
+hosts='172.22.92.58 172.22.92.59'
+server='172.22.123.191'
 
 
 set_yum_repo(){
@@ -23,7 +26,7 @@ rm -rf ambaribn.repo
 yum clean all
 
 # get desired repo from:http://release.eng.hortonworks.com/
-wget http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/BUILDS/2.4.0.0-306/ambaribn.repo
+wget http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/BUILDS/2.4.0.0-497/ambaribn.repo
 
 EOF
 
@@ -128,7 +131,6 @@ EOF
 main(){
   case $1 in
     server)
-        h="172.22.108.120"
         echo "************* Processing server, host: [ $server ] ****************"
         reset_server $server
        ;;

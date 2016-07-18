@@ -48,7 +48,17 @@ case "$1" in
           source .dev-profile
           ./bin/standalone-open-ldap.sh
           ;;
-
+      clean-setup)
+          echo "Clean setup ..."
+          source .dev-profile
+          rm -rf $DEV_AMBARI_PROJECT_DIR/ambari-server/target
+          rm -rf $DEV_AMBARI_PROJECT_DIR/ambari-agent/target
+          ./setup.sh
+          ;;
+      build)
+          echo "Building modules for the local env"
+          ./bin/build.sh
+          ;;
       *)
       echo "Available commands:
       ./dev-env setup
