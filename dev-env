@@ -59,6 +59,10 @@ case "$1" in
           echo "Building modules for the local env"
           ./bin/build.sh
           ;;
+      clean-logs)
+          echo "Cleaning ambari-server logs"
+          rm -rf "$HOME/tmp/docker/ambari-server/logs"
+          ;;
       *)
       echo "Available commands:
       ./dev-env setup
@@ -69,6 +73,8 @@ case "$1" in
       ./dev-env yum-repo-start
       ./dev-env use-local-yum-repo
       ./dev-env openldap-start
-      ./dev-env help
+      ./dev-env clean-setup
+      ./dev-env build
+      ./dev-env clean-logs
       "
 esac

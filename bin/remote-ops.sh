@@ -1,23 +1,23 @@
 #!/usr/bin/env bash -a
 
-# 172.22.92.59	lpuskas-dev-2.openstacklocal	lpuskas-dev-2	lpuskas-dev-2.openstacklocal.
-# 172.22.92.58	lpuskas-dev-1.openstacklocal	lpuskas-dev-1	lpuskas-dev-1.openstacklocal
 
-172.22.123.191	lp-1600-1.openstacklocal	lp-1600-1	lp-1600-1.openstacklocal.
-
-*************** /etc/hosts info ****************
-172.22.86.30	lp-perf-1.openstacklocal	lp-perf-1	lp-perf-1.openstacklocal.
-************************************************
-
-
-hosts='172.22.92.58 172.22.92.59'
-server='172.22.123.191'
+# *************** /etc/hosts info ****************
+# 172.22.91.166	lpuskas-7.openstacklocal	lpuskas-7	lpuskas-7.openstacklocal.
+# 172.22.91.165	lpuskas-6.openstacklocal	lpuskas-6	lpuskas-6.openstacklocal.
+# 172.22.91.164	lpuskas-5.openstacklocal	lpuskas-5	lpuskas-5.openstacklocal.
+# 172.22.91.163	lpuskas-4.openstacklocal	lpuskas-4	lpuskas-4.openstacklocal.
+# 172.22.91.161	lpuskas-3.openstacklocal	lpuskas-3	lpuskas-3.openstacklocal.
+# 172.22.91.160	lpuskas-2.openstacklocal	lpuskas-2	lpuskas-2.openstacklocal.
+# 172.22.91.159	lpuskas-1.openstacklocal	lpuskas-1	lpuskas-1.openstacklocal.
+# ************************************************
+hosts='172.22.91.160 172.22.91.161 172.22.91.163 172.22.91.164 172.22.91.165 172.22.91.166'
+server='172.22.91.159'
 
 
 set_yum_repo(){
   cat <<EOF
 
-cd cd /etc/yum.repos.d/
+cd /etc/yum.repos.d/
 
 # remove stale repo files
 rm -rf ambari.repo
@@ -25,11 +25,23 @@ rm -rf ambaribn.repo
 
 yum clean all
 
-# get desired repo from:http://release.eng.hortonworks.com/
-wget http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/BUILDS/2.4.0.0-497/ambaribn.repo
+curl -o ambari.repo http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/BUILDS/2.2.1.12-11/ambaribn.repo
 
 EOF
+}
 
+start_server(){
+  cat <<EOF
+  ambari-server setup -s
+  ambari-server start
+EOF
+}
+
+start_agent(){
+  cat <<EOF
+  ambari-agent reset $server
+  ambari-agent start
+EOF
 }
 
 install_ambari_cmd(){
@@ -74,7 +86,7 @@ EOF
 
 execute_cmd(){
   ssh -i ~/.ssh/hw-dev-keypair.pem root@"$1"  <<EOF
-    "$2"
+    $2
 EOF
 }
 
@@ -92,7 +104,7 @@ reset_agent(){
   yum clean all
 
   # get desired repo from:http://release.eng.hortonworks.com/
-  wget http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/BUILDS/2.4.0.0-306/ambaribn.repo
+  wget http://s3.amazonaws.com/dev.hortonworks.com/ambari/centos6/2.x/BUILDS/2.2.1.12-11/ambaribn.repo
 
 
   # kills all python processes
@@ -130,6 +142,35 @@ EOF
 
 main(){
   case $1 in
+    yum-repos)
+       execute_cmd $server "$(set_yum_repo)"
+       for h in $hosts;
+       do
+         execute_cmd $h "$(set_yum_repo)"
+       done;
+    ;;
+    install)
+       execute_cmd $server "yum install -y ambari-server"
+       for h in $hosts;
+       do
+         execute_cmd $h "yum install -y ambari-agent"
+       done;
+    ;;
+    start)
+      #  execute_cmd $server "$(start_server)"
+       for h in $hosts;
+       do
+         execute_cmd $h "$(start_agent)"
+       done;
+    ;;
+
+    yum-repos)
+       execute_cmd $server "$(set_yum_repo)"
+       for h in $hosts;
+       do
+         execute_cmd $h "$(set_yum_repo)"
+       done;
+    ;;
     server)
         echo "************* Processing server, host: [ $server ] ****************"
         reset_server $server
@@ -151,5 +192,8 @@ main(){
        ;;
   esac
 }
+
+# install yum repo
+# distribute private ssh keys
 
 main "$@"

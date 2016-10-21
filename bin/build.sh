@@ -13,7 +13,7 @@
 
 
 build_modules(){
-  modules_to_build=(ambari-metrics ambari-admin ambari-views)
+  modules_to_build=(ambari-web ambari-metrics ambari-admin ambari-views)
   echo "Building modules: ${modules_to_build[*]}"
   # DEV_AMBARI_PROJECT_DIR=~/prj/ambari
   for module in ${modules_to_build[*]}; do
