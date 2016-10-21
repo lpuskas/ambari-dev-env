@@ -48,7 +48,21 @@ case "$1" in
           source .dev-profile
           ./bin/standalone-open-ldap.sh
           ;;
-
+      clean-setup)
+          echo "Clean setup ..."
+          source .dev-profile
+          rm -rf $DEV_AMBARI_PROJECT_DIR/ambari-server/target
+          rm -rf $DEV_AMBARI_PROJECT_DIR/ambari-agent/target
+          ./setup.sh
+          ;;
+      build)
+          echo "Building modules for the local env"
+          ./bin/build.sh
+          ;;
+      clean-logs)
+          echo "Cleaning ambari-server logs"
+          rm -rf "$HOME/tmp/docker/ambari-server/logs"
+          ;;
       *)
       echo "Available commands:
       ./dev-env setup
@@ -59,6 +73,8 @@ case "$1" in
       ./dev-env yum-repo-start
       ./dev-env use-local-yum-repo
       ./dev-env openldap-start
-      ./dev-env help
+      ./dev-env clean-setup
+      ./dev-env build
+      ./dev-env clean-logs
       "
 esac
