@@ -3,12 +3,15 @@ echo "Generating file $JSON_INPUT ..."
 echo "[" | cat > $JSON_INPUT
 while read LINE
 do
-  USR_HOME=/user/$(echo $LINE | awk -F, '{print $1}')
-  #ARGS="$ARGS $USR_HOME"
+  USR_NAME=$(echo $LINE | awk -F, '{print $1}')
+  echo "Processing username: $USR_NAME"
+
+  USR_HOME=$(printf "%q" "$USR_NAME")
+  echo "User homedir: $USR_HOME"
 
   cat <<EOF >> "$JSON_INPUT"
     {
-    "target":"$USR_HOME",
+    "target":"/uster/$USR_HOME",
     "type":"directory",
     "action":"create",
     "group":"hive"

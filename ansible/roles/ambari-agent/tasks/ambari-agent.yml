@@ -1,0 +1,3 @@
+- name: "Run Ambari Agent operation: {{ agent_op }}"
+  command: ambari-agent "{{ agent_op }}"
+  register: result

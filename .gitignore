@@ -1,4 +1,5 @@
 .dev-profile
 conf/version
-*.yml
-*.bak
+!ansible/*.yml
+/*.yml
+/*.bak

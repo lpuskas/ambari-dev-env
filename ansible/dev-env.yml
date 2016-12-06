@@ -1,0 +1,20 @@
+- name: Manage Ambari yum repository
+  sudo: yes
+  hosts: all
+  roles:
+    - ambari-common
+
+- name: Manage Ambari Server
+  sudo: yes
+  hosts: ambari-server
+  roles:
+    - ambari-server
+
+- name: Manage Ambari Agents
+  sudo: yes
+  hosts: ambari-agent
+  roles:
+    - ambari-agent
+
+
+# 5. patch server (overwrite server jar)
