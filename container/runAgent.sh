@@ -29,6 +29,7 @@ main() {
   fi
 
   ambari-agent reset $AMBARI_SERVER_HOSTNAME
+  sed -i.bak '/\[agent\]/a system_resource_overrides=/etc/resource_overrides/' /etc/ambari-agent/conf/ambari-agent.ini
   ambari-agent start -v
 
   while true; do
