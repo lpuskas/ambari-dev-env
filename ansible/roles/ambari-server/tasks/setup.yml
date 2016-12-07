@@ -1,0 +1,16 @@
+- name: Install Ambari Server
+  yum:
+    name: ambari-server
+    state: latest
+    disable_gpg_check: true
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Setup Ambari Server
+  command: ambari-server setup -s
+  register: result
+  ignore_errors: True
+
+- name: Start Ambari Server
+  command: ambari-server start
+  register: result
+  ignore_errors: True

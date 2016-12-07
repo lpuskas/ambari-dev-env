@@ -1,0 +1,16 @@
+- name: Install Ambari Agent
+  yum:
+    name: ambari-agent
+    state: latest
+    disable_gpg_check: true
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: "Reset Ambari Agent to {{ ambari_server }}"
+  command: ambari-agent reset "{{ ambari_server }}"
+  register: result
+  ignore_errors: True
+
+- name: "Start Ambari Agent"
+  command: ambari-agent start
+  register: result
+  ignore_errors: True

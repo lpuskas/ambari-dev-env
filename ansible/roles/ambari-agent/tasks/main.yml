@@ -1,0 +1,5 @@
+- include: "{{ env_op }}.yml"
+  when: env_op is defined
+
+- include: "ambari-agent.yml"
+  when: agent_op is defined

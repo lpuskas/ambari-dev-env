@@ -55,8 +55,8 @@ ldap_exists() {
 }
 
 openldap_init() {
-  B2D_IP=$(boot2docker ip)
-
+  #B2D_IP=$(docker-machine ip test)
+  B2D_IP=localhost
   echo "Initializing OpenLDAP ..."
   # verify that openldap is up and running by searching for the admin user
   ldapsearch -x -h "$B2D_IP" -D "$LDAP_ADMIN_USER" -w "$LDAP_ROOTPASS" -b "$LDAP_SEARCH_BASE"  "cn=admin" > /dev/null

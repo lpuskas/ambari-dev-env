@@ -1,0 +1,20 @@
+- name: Checking if Ambari Server is running
+  command: ambari-server status
+  register: result
+  ignore_errors: True
+
+- name: Stop Ambari Server
+  shell: ambari-server stop
+  when: result|succeeded
+
+- name: Uninstall Ambari Server
+  yum:
+    name: ambari-server
+    state: removed
+    disable_gpg_check: true
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Remove Ambari repository
+  yum_repository:
+    name: ambari
+    state: absent

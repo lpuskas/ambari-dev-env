@@ -1,0 +1,1 @@
+yum_repo_base_url: "{{ base_url }}"

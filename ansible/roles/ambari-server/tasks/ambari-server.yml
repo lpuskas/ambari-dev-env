@@ -1,0 +1,4 @@
+- name: "Run Ambari Server operation: {{ server_op }}"
+  command: ambari-server "{{ server_op }}"
+  register: result
+  ignore_errors: True

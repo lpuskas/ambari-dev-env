@@ -216,7 +216,6 @@ $CONTAINER_NAME:
   entrypoint: ["/bin/sh"]
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
-    - "$HOME/.m2/:/root/.m2"
     - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
     - "$HOME/tmp/docker/ambari-agents/ambari-agent-$i/log:/var/log/ambari-agent"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/consul.json:/etc/consul.json"

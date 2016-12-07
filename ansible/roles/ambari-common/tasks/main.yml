@@ -1,0 +1,6 @@
+- name: Add Ambari repository "{{ env_op }}"
+  yum_repository:
+    name: ambari
+    description: Ambari yum repo
+    baseurl: "{{ base_url }}"
+  when: env_op is defined

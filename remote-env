@@ -1,0 +1,100 @@
+#!/usr/bin/env bash +a
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distrbuted under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+source .dev-profile
+
+: ${SSH_KEY_FILE?"Please set the ssh key file to access the remote environment"}
+: ${DEV_AMBARI_REPO_URL?"Please set the ambari repo base url"}
+
+ansible-docker(){
+  eval "docker run --rm -it -v ~/prj/ambari-dev-env:/tmp -v $SSH_KEY_FILE:/tmp/ssh ansible/centos7-ansible ansible-playbook -i /tmp/ansible/hosts /tmp/ansible/dev-env.yml $1"
+}
+
+generate-inventory(){
+  echo "Generting inventory file ..."
+  while read -r LINE
+  do
+    IP=$(echo "$LINE" | awk '{print $1}')
+    echo "Processing user name: $IP"
+    if [ -z "$AMBARI_SERVER" ]
+    then
+      AMBARI_SERVER="$IP"
+    else
+      AMBARI_AGENTS="$AMBARI_AGENTS
+$IP"
+    fi
+  done <"host_info"
+
+cat <<EOF > ansible/hosts
+[ambari-server]
+$AMBARI_SERVER
+
+[ambari-agent]
+$AMBARI_AGENTS
+
+[ambari-agent:vars]
+ambari_server_ip="$AMBARI_SERVER"
+
+EOF
+
+}
+
+
+main(){
+  if [ ! -f "ansible/hosts" ]; then
+    generate-inventory
+  fi
+  options=("Setup" "Clean" "Restart All" "Restart Server" "Restart agents" "Stop Server" "Stop Agents" "Quit")
+  select opt in "${options[@]}"
+do
+    case $opt in
+        "Setup")
+                ansible-docker "--extra-vars '{ \"env_op\": \"setup\", \"base_url\": \"$DEV_AMBARI_REPO_URL\"}' -vvv"
+                eval $cmd
+                break
+                ;;
+        "Clean")
+                ansible-docker "--extra-vars \"env_op=clean base_url=$DEV_AMBARI_REPO_URL\" -vvv"
+                break
+                ;;
+        "Restart All")
+                ansible-docker "--extra-vars \"agent_op=restart,server_op=restart\" -vvv"
+                break
+                ;;
+        "Restart Server")
+                ansible-docker "--extra-vars \"server_op=restart\" -vvv"
+                break
+                ;;
+        "Restart Agents")
+                ansible-docker "--extra-vars \"agent_op=restart\" -vvv"
+                break
+                ;;
+        "Stop Server")
+                ansible-docker "--extra-vars \"server_op=stop\" -vvv"
+                break
+                ;;
+        "Stop Agents")
+                ansible-docker "--extra-vars \"agent_op=s\" -vvv"
+                break
+                ;;
+
+        "Quit")
+                break
+                ;;
+        *) echo invalid option;;
+    esac
+done
+
+}
+
+main "$@"
