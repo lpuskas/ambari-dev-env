@@ -29,6 +29,11 @@ check-dev-env(){
 : ${DEV_YUM_REPO_DIR:="$HOME/tmp/docker/repos"}
 : ${LDAP_BASE_DOMAIN:=dev.local}
 : ${LDAP_ROOTPASS:=s3cr3tpassw0rd}
+: ${DEV_DATABASE_SERVER_CONTAINER_MEM_LIMIT:=128m}
+: ${DEV_KERBEROS_SERVER_CONTAINER_MEM_LIMIT:=64m}
+: ${DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT:=1g}
+: ${DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT:=2g}
+: ${DEV_ENABLE_CONTAINER_MONITORING:="false"}
 }
 
 set-project-path() {
@@ -74,6 +79,22 @@ DEV_AMBARI_PASSPHRASE=DEV
 
 # Password for LDAP admin user
 # LDAP_ROOTPASS=
+
+
+# Hard memory limit for the database serever container
+# DEV_DATABASE_SERVER_CONTAINER_MEM_LIMIT=
+
+# Hard memory limit for kerberos serevr container
+# DEV_KERBEROS_SERVER_CONTAINER_MEM_LIMIT=
+
+# Hard memory limit for ambari server container
+# DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT=
+
+# Hard limit for ambari agent container
+# DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT=
+
+# Enable/disable container monitoring
+# DEV_ENABLE_CONTAINER_MONITORING="false"
 
 
 EOF
@@ -142,6 +163,8 @@ $CONTAINER_NAME:
   privileged: true
   container_name: $CONTAINER_NAME
   hostname: $CONTAINER_NAME
+  mem_limit: $DEV_DATABASE_SERVER_CONTAINER_MEM_LIMIT
+  memswap_limit: $DEV_DATABASE_SERVER_CONTAINER_MEM_LIMIT
   ports:
     - "5432:5432"
   environment:
@@ -163,6 +186,8 @@ $CONTAINER_NAME:
   privileged: true
   container_name: $CONTAINER_NAME
   hostname: $CONTAINER_NAME.node.dc1.consul
+  mem_limit: $DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT
+  memswap_limit: $DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT
   ports:
     - "$DEV_AMBARI_SERVER_DEBUG_PORT:50100"
     - "8080:8080"
@@ -205,6 +230,8 @@ $CONTAINER_NAME:
   privileged: true
   container_name: $CONTAINER_NAME
   hostname: $CONTAINER_NAME.node.dc1.consul
+  mem_limit: $DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT
+  memswap_limit: $DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT
   image: $DEV_DOCKER_IMAGE
   dns:
     - 0.0.0.0
@@ -219,6 +246,7 @@ $CONTAINER_NAME:
     - "$DEV_PROJECT_PATH/container/runAgent.sh:/scripts/runAgent.sh"
     - "$HOME/tmp/docker/ambari-agents/ambari-agent-$i/log:/var/log/ambari-agent"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/consul.json:/etc/consul.json"
+    - "$DEV_AMBARI_SERVER_CONFIG_DIR/agent_container_resources.json:/etc/resource_overrides/agent_resources.json"
   command: -c '/scripts/runAgent.sh $DEV_AMBARI_REPO_URL'
 
 EOF
@@ -231,6 +259,8 @@ $CONTAINER_NAME:
   privileged: true
   container_name: $CONTAINER_NAME
   hostname: $CONTAINER_NAME
+  mem_limit: $DEV_KERBEROS_SERVER_CONTAINER_MEM_LIMIT
+  memswap_limit: $DEV_KERBEROS_SERVER_CONTAINER_MEM_LIMIT
   volumes:
     - "/dev/urandom:/dev/random"
     - "$HOME/tmp/docker/kdc/log:/var/log/kerberos"
@@ -239,6 +269,51 @@ $CONTAINER_NAME:
     - REALM=$DEV_KERBEROS_REALM
     - DOMAIN_REALM=$DEV_KERBEROS_DOMAIN_REALM
 
+EOF
+}
+
+gen-docker-container-monitoring-yml(){
+  cat <<EOF >> $1
+influxsrv:
+  image: "tutum/influxdb:0.9"
+  container_name: "influxsrv"
+  ports:
+    - "8083:8083"
+    - "8086:8086"
+  expose:
+    - "8090"
+    - "8099"
+  environment:
+    - PRE_CREATE_DB=cadvisor
+    - ADMIN_USER=root
+    - INFLUXDB_INIT_PWD=root
+cadvisor:
+  image: "google/cadvisor:v0.24.1"
+  container_name: "cadvisor"
+  privileged: true
+  volumes:
+    - "/:/rootfs:ro"
+    - "/var/run:/var/run:rw"
+    - "/sys:/sys:ro"
+    - "/var/lib/docker/:/var/lib/docker:ro"
+  links:
+    - "influxsrv:influxsrv"
+  ports:
+    - "8088:8080"
+  command: "-storage_driver=influxdb -storage_driver_db=cadvisor -storage_driver_host=influxsrv:8086"
+grafana:
+  image: "grafana/grafana:3.1.1"
+  container_name: "grafana"
+  ports:
+    - "3000:3000"
+  environment:
+    - INFLUXDB_HOST=influxsrv
+    - INFLUXDB_PORT=8086
+    - INFLUXDB_NAME=cadvisor
+    - INFLUXDB_USER=root
+    - INFLUXDB_PASS=root
+  links:
+    - "influxsrv:influxsrv"
 EOF
 }
 
@@ -257,7 +332,13 @@ gen-compose-yml(){
   do
     gen-ambari-agent-yml $1
   done
+
   gen-kerberos-server-yml $1
+
+  if [ "$DEV_ENABLE_CONTAINER_MONITORING" = "true" ]; then
+        gen-docker-container-monitoring-yml $1
+  fi
+
   echo "Compose file: $1 ready!"
 }
 
