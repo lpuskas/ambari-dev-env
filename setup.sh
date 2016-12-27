@@ -33,6 +33,7 @@ check-dev-env(){
 : ${DEV_KERBEROS_SERVER_CONTAINER_MEM_LIMIT:=64m}
 : ${DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT:=1g}
 : ${DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT:=2g}
+: ${DEV_ENABLE_CONTAINER_MONITORING:="false"}
 }
 
 set-project-path() {
@@ -89,8 +90,11 @@ DEV_AMBARI_PASSPHRASE=DEV
 # Hard memory limit for ambari server container
 # DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT=
 
-# Hard limnit for ambari agent container
+# Hard limit for ambari agent container
 # DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT=
+
+# Enable/disable container monitoring
+# DEV_ENABLE_CONTAINER_MONITORING="false"
 
 
 EOF
@@ -328,8 +332,12 @@ gen-compose-yml(){
   do
     gen-ambari-agent-yml $1
   done
+
   gen-kerberos-server-yml $1
-  gen-docker-container-monitoring-yml $1
+
+  if [ "$DEV_ENABLE_CONTAINER_MONITORING" = "true" ]; then
+        gen-docker-container-monitoring-yml $1
+  fi
 
   echo "Compose file: $1 ready!"
 }

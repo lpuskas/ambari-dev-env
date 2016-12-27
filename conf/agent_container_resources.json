@@ -1,3 +1,9 @@
 {
-  "memorytotal": "2097152"
+  "memorytotal": "2097152",
+  "memorysize": "2097152",
+  "memoryfree": "1835008",
+  "swapsize": "4194304",
+  "swapfree": "2097152",
+  "processorcount": "2",
+  "physicalprocessorcount": "2"
 }
