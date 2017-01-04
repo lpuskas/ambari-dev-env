@@ -34,6 +34,7 @@ check-dev-env(){
 : ${DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT:=1g}
 : ${DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT:=2g}
 : ${DEV_ENABLE_CONTAINER_MONITORING:="false"}
+: ${DEV_DOCKER_PRE_INSTALLED_IMAGE_TAG:=latest}
 }
 
 set-project-path() {
@@ -95,6 +96,13 @@ DEV_AMBARI_PASSPHRASE=DEV
 
 # Enable/disable container monitoring
 # DEV_ENABLE_CONTAINER_MONITORING="false"
+
+# The docker image tag that identifies the
+# image to use to spawn ambari agents.
+# This allows to use images that have HDP packages pre-installed.
+# e.g DEV_DOCKER_AGENT_IMAGE_TAG=HDP-2.5.3.0, could be
+# an image that has HDP-2.5.3.0 packaged pre-installed
+DEV_DOCKER_AGENT_IMAGE_TAG=latest
 
 
 EOF
@@ -232,7 +240,7 @@ $CONTAINER_NAME:
   hostname: $CONTAINER_NAME.node.dc1.consul
   mem_limit: $DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT
   memswap_limit: $DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT
-  image: $DEV_DOCKER_IMAGE
+  image: "$DEV_DOCKER_IMAGE:$DEV_DOCKER_AGENT_IMAGE_TAG"
   dns:
     - 0.0.0.0
   links:

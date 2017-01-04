@@ -63,6 +63,15 @@ case "$1" in
           echo "Cleaning ambari-server logs"
           rm -rf "$HOME/tmp/docker/ambari-server/logs"
           ;;
+      build-hdp-docker-image)
+          echo "Creating docker image with HDP pre-installed"
+          echo
+          echo
+
+
+          shift
+          ./bin/build-hdp-docker-image.sh "$@"
+          ;;
       *)
       echo "Available commands:
       ./dev-env setup
@@ -76,5 +85,6 @@ case "$1" in
       ./dev-env clean-setup
       ./dev-env build
       ./dev-env clean-logs
+      ./dev-env build-hdp-docker-image (e.g. ./dev-env build-hdp-docker-image http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.5.3.0 HDP-2.5.3.0-37)
       "
 esac
