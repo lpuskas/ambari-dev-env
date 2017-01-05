@@ -43,7 +43,7 @@ $AMBARI_SERVER
 $AMBARI_AGENTS
 
 [ambari-agent:vars]
-ambari_server_ip="$AMBARI_SERVER"
+ambari_server=$AMBARI_SERVER
 
 EOF
 
@@ -84,7 +84,7 @@ do
                 break
                 ;;
         "Stop Agents")
-                ansible-docker "--extra-vars \"agent_op=s\" -vvv"
+                ansible-docker "--extra-vars \"agent_op=stop\" -vvv"
                 break
                 ;;
 
