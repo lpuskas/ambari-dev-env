@@ -132,7 +132,7 @@ build-rpm(){
   DEV_MODULE=$1
   DEV_MVN_RPM_COMMAND=""
   DEV_RPM_EXISTS_COMMAND=""
-  container_workspace="/ambari/$DEV_MODULE"
+  container_workspace="/ambari"
 
   case "$DEV_MODULE" in
     ambari-metrics)
@@ -141,7 +141,7 @@ build-rpm(){
     ;;
     *)
         DEV_RPM_EXISTS_CHECK_DIR="$DEV_AMBARI_PROJECT_DIR/$DEV_MODULE/target/rpm/$DEV_MODULE/RPMS/x86_64"
-        DEV_MVN_RPM_COMMAND="mvn package rpm:rpm -B -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -Drat.skip=true -Dpython.ver=\"python >= 2.6\""
+        DEV_MVN_RPM_COMMAND="mvn package -am rpm:rpm -B -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -Drat.skip=true -Dpython.ver=\"python >= 2.6\" -pl $DEV_MODULE"
   esac
 
   echo -n "Build rpm for $DEV_MODULE ... "
@@ -216,6 +216,7 @@ $CONTAINER_NAME:
     - "$HOME/tmp/docker/ambari-server/tmp:/tmp/ambari-server"
     - "$HOME/tmp/docker/ambari-server/logs:/logs/ambari-server"
     - "$HOME/tmp/docker/ambari-server/keytabs:/keytabs/ambari-server"
+    - "$HOME/tmp/docker/ambari-server/keytabs:/etc/security/keytabs"
     - "$HOME/tmp/docker/ambari-server/ssl-keys:/ssl-keys/ambari-server"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/consul.json:/etc/consul.json"
     - "$HOME/tmp/docker/ambari-server/views:/views"

@@ -19,7 +19,7 @@ case "$1" in
           ;;
       start)
           echo "Starting dev env ..."
-          docker-compose up -d
+          docker-compose up -d --no-recreate
           ;;
       schema-upgrade)
           echo "Starting schema upgrade ...";

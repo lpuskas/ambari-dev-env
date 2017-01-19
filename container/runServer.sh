@@ -19,13 +19,18 @@ ambari-dev-server-start() {
 
  echo "Refreshing stack hash codes and starting the application.."
  python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash
+ 
+ cp /ambari/ambari-server/conf/unix/ambari-sudo.sh /usr/local/sbin/ambari-sudo.sh
+ chmod 777 /usr/local/sbin/ambari-sudo.sh
 
  java \
     -Dfile.encoding=UTF-8 \
     -Dlog4j.configuration=file:/ambari-server-conf/log4j.properties \
-    -Xmx2048m -Xms256m \
+    -Djava.security.auth.login.config=/ambari-server-conf/krb5JAASLogin.conf \
+    -DskipDatabaseConsistencyValidation \
+    -Xmx2048m -Xms256m -XX:MaxPermSize=128m -XX:+CMSClassUnloadingEnabled \
     -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=50100 \
-    -classpath $(cat /tmp/cp.txt):target/classes:/ambari-server-conf:/ambari/ambari-views/target \
+    -classpath $(cat /tmp/cp.txt):target/classes:/ambari-server-conf \
     org.apache.ambari.server.controller.AmbariServer &
 
   SERVER_PID="$!"
