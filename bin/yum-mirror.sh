@@ -15,7 +15,7 @@ setup(){
   : ${DEV_DOCKER_IMAGE:=ambari/docker-dev}
 
   # yum repo id to mirror
-  : ${REPO_ID:="HDP-2.3.2.0"}
+  : ${REPO_ID:="HDP-2.5.0.0"}
 
   # get stack version from REPO_ID
   STACK_VERSION_MAJOR=$(echo "$REPO_ID" | grep -oP "HDP-\K[0-9]+")
@@ -65,14 +65,14 @@ EOF
 }
 
 use-local-repo(){
-  B2D_IP=$(docker-machine ip test)
+  B2D_IP=10.200.51.22
 
   cat <<EOF >$HOME/tmp/local_repo.json
   {
     "Repositories" : {
-      "base_url" : "http://$B2D_IP/repos/$REPO_ID",
-      "default_base_url" : "http://$B2D_IP/repos/$REPO_ID",
-      "latest_base_url" : "http://$B2D_IP/repos/$REPO_ID",
+      "base_url" : "http://$B2D_IP:80/repos/$REPO_ID",
+      "default_base_url" : "http://$B2D_IP:80/repos/$REPO_ID",
+      "latest_base_url" : "http://$B2D_IP:80/repos/$REPO_ID",
       "mirrors_list" : null,
       "os_type" : "redhat6",
       "repo_id" : "HDP-$STACK_VERSION_MAJOR.$STACK_VERSION_MINOR",
@@ -83,6 +83,7 @@ use-local-repo(){
   }
 
 EOF
+echo "XXX: http://$B2D_IP:8080/api/v1/stacks/HDP/versions/$STACK_VERSION_MAJOR.$STACK_VERSION_MINOR/operating_systems/redhat6/repositories/$REPO_ID"
   curl --verbose -u admin:admin -H "X-Requested-By:ambari" -X PUT -d @"$HOME/tmp/local_repo.json" http://$B2D_IP:8080/api/v1/stacks/HDP/versions/$STACK_VERSION_MAJOR.$STACK_VERSION_MINOR/operating_systems/redhat6/repositories/$REPO_ID
 }
 
