@@ -1,0 +1,20 @@
+- name: Copy dev Agent rpm ...
+  copy:
+    src: /ambari/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64/ambari-agent-2.0.0.0-SNAPSHOT.x86_64.rpm
+    dest: /tmp
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install Ambari Agent (dev rpm)
+  yum:
+    name: /tmp/ambari-agent-2.0.0.0-SNAPSHOT.x86_64.rpm
+    state: present
+
+- name: "Install ambari Agents"
+  command: ambari-agent reset "{{ ambari_server }}"
+  register: result
+  ignore_errors: True
+
+- name: "Start Ambari Agent"
+  command: ambari-agent start
+  register: result
+  ignore_errors: True
