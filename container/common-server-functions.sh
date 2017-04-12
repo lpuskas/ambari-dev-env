@@ -65,6 +65,9 @@ copy-libs-to-resources-dir() {
   echo "cp -f /ambari/ambari-server/target/DBConnectionVerification.jar /ambari/ambari-server/target/classes/DBConnectionVerification.jar"
   cp -f /ambari/ambari-server/target/DBConnectionVerification.jar /ambari/ambari-server/target/classes/DBConnectionVerification.jar
 
+  echo "cp -f /ambari/ambari-server/target/CredentialUtil.jar /ambari/ambari-server/target/classes/CredentialUtil.jar"
+  cp -f /ambari/ambari-server/target/CredentialUtil.jar /ambari/ambari-server/target/classes/CredentialUtil.jar
+
 }
 
 main() {

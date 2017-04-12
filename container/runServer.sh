@@ -30,7 +30,7 @@ ambari-dev-server-start() {
     -DskipDatabaseConsistencyValidation \
     -Xmx2048m -Xms256m -XX:MaxPermSize=128m -XX:+CMSClassUnloadingEnabled \
     -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=50100 \
-    -classpath $(cat /tmp/cp.txt):target/classes:/ambari-server-conf \
+    -classpath $(cat /tmp/cp.txt):target/classes:/ambari-server-conf:/ambari/ambari-views/target \
     org.apache.ambari.server.controller.AmbariServer &
 
   SERVER_PID="$!"
@@ -87,7 +87,7 @@ ambari-server-start() {
 
 main() {
   echo "Registering $HOSTNAME consul node with consul cluster"
-  consul agent -config-file=/etc/consul.json -server -bootstrap -node=$(hostname -s) -advertise=$(hostname -i) -client=0.0.0.0 -recursor=8.8.8.8 -recursor=192.168.0.1 &
+  consul agent -config-file=/etc/consul.json -server -bootstrap -node=$(hostname -s) -advertise=$(hostname -i) -client=0.0.0.0 -recursor=8.8.8.8 -recursor=10.10.1.20 -recursor=10.42.1.20 &
 
   if [ ! -n "$1" ]
     then

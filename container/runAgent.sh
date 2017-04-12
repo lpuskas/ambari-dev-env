@@ -15,7 +15,7 @@ main() {
  export CONTAINER_IP=$(hostname -i)
 
  echo "Registering $HOSTNAME consul node with consul cluster"
- consul agent -config-file=/etc/consul.json -server -node=$(hostname -s) -advertise=$CONTAINER_IP -client=0.0.0.0 -recursor=8.8.8.8  -recursor=192.168.0.1 -join ambari-server &
+ consul agent -config-file=/etc/consul.json -server -node=$(hostname -s) -advertise=$CONTAINER_IP -client=0.0.0.0 -recursor=8.8.8.8  -recursor=10.10.1.20 -recursor=10.42.1.20  -join ambari-server &
 
   if [ ! -n "$1" ] || [ "$1" = "local" ]
     then
