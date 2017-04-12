@@ -12,15 +12,9 @@
 
 FROM ambari/docker-dev:latest
 
-# The URL of the repo the HDP packages will be pre-installed from
-ARG HDP_REPO_URL=http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.5.3.0
 
-# Name of the HDP repo file
-ARG HDP_REPO_NAME=hdp.repo
-
-RUN yum-config-manager --add-repo "$HDP_REPO_URL/$HDP_REPO_NAME" && \
-    yum update -y && \
-    yum -d 0 -e 0 -y install \
+RRUN yum -d 0 -e 0  -y install yum-skip-broken && yum update -y --skip-broken && \
+    yum -d 0 -e 0 -y install --skip-broken \
                 hadoop hadoop-hdfs hadoop-libhdfs hadoop-yarn hadoop-mapreduce hadoop-client openssl \
                 snappy snappy-devel lzo lzo-devel hadooplzo hadooplzo-native \
                 zookeeper_2*-server zookeeper_2* \
