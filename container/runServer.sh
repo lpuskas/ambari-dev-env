@@ -19,7 +19,7 @@ ambari-dev-server-start() {
 
  echo "Refreshing stack hash codes and starting the application.."
  python /ambari/ambari-server/src/main/python/ambari-server.py refresh-stack-hash
- 
+
  cp /ambari/ambari-server/conf/unix/ambari-sudo.sh /usr/local/sbin/ambari-sudo.sh
  chmod 777 /usr/local/sbin/ambari-sudo.sh
 

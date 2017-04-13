@@ -137,7 +137,7 @@ build-rpm(){
   case "$DEV_MODULE" in
     ambari-metrics)
         DEV_RPM_EXISTS_CHECK_DIR="$DEV_AMBARI_PROJECT_DIR/$DEV_MODULE/ambari-metrics-assembly/target/rpm"
-        DEV_MVN_RPM_COMMAND="mvn package -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -Drat.skip=true -Dpython.ver='python >= 2.6'"
+        DEV_MVN_RPM_COMMAND="mvn package -Dbuild-rpm -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -Drat.skip=true -Dpython.ver='python >= 2.6' -Dcheckstyle.skip"
     ;;
     *)
         DEV_RPM_EXISTS_CHECK_DIR="$DEV_AMBARI_PROJECT_DIR/$DEV_MODULE/target/rpm/$DEV_MODULE/RPMS/x86_64"

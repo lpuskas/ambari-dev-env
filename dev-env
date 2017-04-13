@@ -60,8 +60,8 @@ case "$1" in
           ./bin/build.sh
           ;;
       build-server-rpm)
-          echo "Building modules for the local env"
-          ./bin/build.sh
+          echo "Building ambari-server rpm"
+          ./setup.sh build-server-rpm
           ;;
       clean-logs)
           echo "Cleaning ambari-server logs"
