@@ -13,7 +13,7 @@
 FROM ambari/docker-dev:latest
 
 
-RRUN yum -d 0 -e 0  -y install yum-skip-broken && yum update -y --skip-broken && \
+RUN yum -d 0 -e 0  -y install yum-skip-broken && yum update -y --skip-broken && \
     yum -d 0 -e 0 -y install --skip-broken \
                 hadoop hadoop-hdfs hadoop-libhdfs hadoop-yarn hadoop-mapreduce hadoop-client openssl \
                 snappy snappy-devel lzo lzo-devel hadooplzo hadooplzo-native \
