@@ -12,8 +12,9 @@
 
 FROM ambari/docker-dev:latest
 
+ADD hdp.repo /etc/yum.repos.d/hdp.repo
 
-RRUN yum -d 0 -e 0  -y install yum-skip-broken && yum update -y --skip-broken && \
+RUN yum -d 0 -e 0  -y install yum-skip-broken && yum update -y --skip-broken && \
     yum -d 0 -e 0 -y install --skip-broken \
                 hadoop hadoop-hdfs hadoop-libhdfs hadoop-yarn hadoop-mapreduce hadoop-client openssl \
                 snappy snappy-devel lzo lzo-devel hadooplzo hadooplzo-native \
@@ -23,7 +24,7 @@ RRUN yum -d 0 -e 0  -y install yum-skip-broken && yum update -y --skip-broken &&
                 hive2_2* hive-hcatalog hive-webhcat mysql-server \
                 pig_2* datafu_2* \
                 oozie_2* oozie-client mysql-connector-java extjs \
-                spark_2* livy_2* \
+                spark_2* livy_2* livy2_2* \
                 spark2_2* \
                 zeppelin_2* \
                 sqoop_2* flume_2* \
