@@ -70,8 +70,18 @@ ambari-setup () {
       echo "Installing from local target ..."
       yum -y install /ambari/ambari-server/target/rpm/ambari-server/RPMS/x86_64/ambari-server-*.x86_64.rpm
   else
+      echo "Installing from yum repo ..."
+      sleep 10
       cd /etc/yum.repos.d
-      wget $1
+      set -x
+      curl -O "$1"
+      retCode=$?
+      echo "curl returned with $retCode"
+      if [ "$retCode" -ne 0 ]
+      then
+        echo
+        exit 1
+      fi
       yum -y install ambari-server
   fi
   ambari-server setup -s
