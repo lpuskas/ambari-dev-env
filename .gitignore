@@ -3,3 +3,4 @@ conf/version
 !ansible/*.yml
 /*.yml
 /*.bak
+hosts

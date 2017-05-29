@@ -24,6 +24,7 @@ main() {
       yum --disableplugin=fastestmirror install -y /ambari/ambari-agent/target/rpm/ambari-agent/RPMS/x86_64/ambari-agent-*.x86_64.rpm
   else
     cd /etc/yum.repos.d
+    sleep 10
     wget $1
     yum -y install ambari-metrics ambari-agent
   fi

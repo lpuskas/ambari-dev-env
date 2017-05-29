@@ -33,11 +33,11 @@ ENV JAVA_HOME /usr/java/default/
 #Install Maven
 RUN mkdir -p /opt/maven
 WORKDIR /opt/maven
-RUN wget http://apache.cs.utah.edu/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.tar.gz
-RUN tar -xvzf /opt/maven/apache-maven-3.0.5-bin.tar.gz
-RUN rm -rf /opt/maven/apache-maven-3.0.5-bin.tar.gz
+RUN wget http://apache.cs.utah.edu/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz
+RUN tar -xvzf /opt/maven/apache-maven-3.1.1-bin.tar.gz
+RUN rm -rf /opt/maven/apache-maven-3.1.1-bin.tar.gz
 
-ENV M2_HOME /opt/maven/apache-maven-3.0.5
+ENV M2_HOME /opt/maven/apache-maven-3.1.1
 ENV MAVEN_OPTS -Xmx2048m -XX:MaxPermSize=256m
 ENV PATH $PATH:$JAVA_HOME/bin:$M2_HOME/bin
 ENV AMBARI_VERSION=2.1.0.0
