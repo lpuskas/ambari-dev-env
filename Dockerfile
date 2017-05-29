@@ -26,18 +26,18 @@ RUN yum -y install glibc-common
 ENV HOME /root
 
 #Install JAVA
-RUN wget --no-check-certificate --no-cookies --header "Cookie:oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/7u55-b13/jdk-7u55-linux-x64.rpm -O jdk-7u55-linux-x64.rpm
-RUN yum -y install jdk-7u55-linux-x64.rpm
+RUN wget --no-check-certificate --no-cookies --header "Cookie:oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm -O jdk-8u131-linux-x64.rpm
+RUN yum -y install jdk-8u131-linux-x64.rpm
 ENV JAVA_HOME /usr/java/default/
 
 #Install Maven
 RUN mkdir -p /opt/maven
 WORKDIR /opt/maven
-RUN wget http://apache.cs.utah.edu/maven/maven-3/3.1.1/binaries/apache-maven-3.1.1-bin.tar.gz
-RUN tar -xvzf /opt/maven/apache-maven-3.1.1-bin.tar.gz
-RUN rm -rf /opt/maven/apache-maven-3.1.1-bin.tar.gz
+RUN wget http://apache.cs.utah.edu/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+RUN tar -xvzf /opt/maven/apache-maven-3.3.9-bin.tar.gz
+RUN rm -rf /opt/maven/apache-maven-3.3.9-bin.tar.gz
 
-ENV M2_HOME /opt/maven/apache-maven-3.1.1
+ENV M2_HOME /opt/maven/apache-maven-3.3.9
 ENV MAVEN_OPTS -Xmx2048m -XX:MaxPermSize=256m
 ENV PATH $PATH:$JAVA_HOME/bin:$M2_HOME/bin
 ENV AMBARI_VERSION=2.1.0.0
