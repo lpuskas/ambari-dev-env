@@ -3,4 +3,4 @@
     name: ambari
     description: Ambari yum repo
     baseurl: "{{ base_url }}"
-  when: env_op is defined
+  when: env_op is defined and base_url is defined

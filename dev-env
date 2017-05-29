@@ -19,7 +19,7 @@ case "$1" in
           ;;
       start)
           echo "Starting dev env ..."
-          docker-compose up -d --no-recreate
+          docker-compose up --no-recreate -d
           ;;
       schema-upgrade)
           echo "Starting schema upgrade ...";
@@ -59,6 +59,10 @@ case "$1" in
           echo "Building modules for the local env"
           ./bin/build.sh
           ;;
+      build-server-rpm)
+          echo "Building modules for the local env"
+          ./bin/build.sh
+          ;;
       clean-logs)
           echo "Cleaning ambari-server logs"
           rm -rf "$HOME/tmp/docker/ambari-server/logs"
@@ -67,7 +71,6 @@ case "$1" in
           echo "Creating docker image with HDP pre-installed"
           echo
           echo
-
 
           shift
           ./bin/build-hdp-docker-image.sh "$@"

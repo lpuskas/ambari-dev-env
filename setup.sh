@@ -141,6 +141,7 @@ build-rpm(){
     ;;
     *)
         DEV_RPM_EXISTS_CHECK_DIR="$DEV_AMBARI_PROJECT_DIR/$DEV_MODULE/target/rpm/$DEV_MODULE/RPMS/x86_64"
+
         DEV_MVN_RPM_COMMAND="mvn package -am rpm:rpm -B -Dstack.distribution=HDP -DskipTests -Dmaven.clover.skip=true -Dfindbugs.skip=true -Drat.skip=true -Dpython.ver=\"python >= 2.6\" -pl $DEV_MODULE"
   esac
 
@@ -206,6 +207,7 @@ $CONTAINER_NAME:
     - AMBARI_CONF_DIR=/ambari-server-conf
     - AMBARI_SECURITY_MASTER_KEY=$DEV_AMBARI_SECURITY_MASTER_KEY
     - ROOT=/
+    - TERM=screen
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"
     - "$HOME/.m2/:/root/.m2"
@@ -214,7 +216,7 @@ $CONTAINER_NAME:
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/:/etc/ambari-server/conf"
     - "$DEV_AMBARI_SERVER_CONFIG_DIR/krb5.conf:/etc/krb5.conf"
     - "$HOME/tmp/docker/ambari-server/tmp:/tmp/ambari-server"
-    - "$HOME/tmp/docker/ambari-server/logs:/logs/ambari-server"
+    - "$HOME/tmp/docker/ambari-server/logs:/var/log/ambari-server"
     - "$HOME/tmp/docker/ambari-server/keytabs:/keytabs/ambari-server"
     - "$HOME/tmp/docker/ambari-server/keytabs:/etc/security/keytabs"
     - "$HOME/tmp/docker/ambari-server/ssl-keys:/ssl-keys/ambari-server"
@@ -249,6 +251,7 @@ $CONTAINER_NAME:
     - kerberos-server
   environment:
     - AMBARI_SERVER_HOSTNAME=ambari-server.node.dc1.consul
+    - TERM=screen
   entrypoint: ["/bin/sh"]
   volumes:
     - "$DEV_AMBARI_PROJECT_DIR/:/ambari"

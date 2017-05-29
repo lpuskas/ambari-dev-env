@@ -17,7 +17,7 @@ source .dev-profile
 : ${DEV_AMBARI_REPO_URL?"Please set the ambari repo base url"}
 
 ansible-docker(){
-  eval "docker run --rm -it -v ~/prj/ambari-dev-env:/tmp -v $SSH_KEY_FILE:/tmp/ssh ansible/centos7-ansible ansible-playbook -i /tmp/ansible/hosts /tmp/ansible/dev-env.yml $1"
+  eval "docker run --rm -it -v ~/prj/ambari:/ambari -v ~/prj/ambari-dev-env:/tmp -v $SSH_KEY_FILE:/tmp/ssh ansible/centos7-ansible ansible-playbook -i /tmp/ansible/hosts /tmp/ansible/dev-env.yml $1"
 }
 
 generate-inventory(){
@@ -25,7 +25,7 @@ generate-inventory(){
   while read -r LINE
   do
     IP=$(echo "$LINE" | awk '{print $1}')
-    echo "Processing user name: $IP"
+    echo "Processing ip: $IP"
     if [ -z "$AMBARI_SERVER" ]
     then
       AMBARI_SERVER="$IP"
@@ -43,7 +43,7 @@ $AMBARI_SERVER
 $AMBARI_AGENTS
 
 [ambari-agent:vars]
-ambari_server_ip="$AMBARI_SERVER"
+ambari_server=$AMBARI_SERVER
 
 EOF
 
@@ -54,7 +54,7 @@ main(){
   if [ ! -f "ansible/hosts" ]; then
     generate-inventory
   fi
-  options=("Setup" "Clean" "Restart All" "Restart Server" "Restart agents" "Stop Server" "Stop Agents" "Quit")
+  options=("Setup" "Clean" "Restart All" "Restart Server" "Stop Server" "Stop Agents" "Start Agents" "Restart agents" "dev-rpm-setup" "Quit")
   select opt in "${options[@]}"
 do
     case $opt in
@@ -75,16 +75,24 @@ do
                 ansible-docker "--extra-vars \"server_op=restart\" -vvv"
                 break
                 ;;
-        "Restart Agents")
-                ansible-docker "--extra-vars \"agent_op=restart\" -vvv"
-                break
-                ;;
         "Stop Server")
                 ansible-docker "--extra-vars \"server_op=stop\" -vvv"
                 break
                 ;;
         "Stop Agents")
-                ansible-docker "--extra-vars \"agent_op=s\" -vvv"
+                ansible-docker "--extra-vars \"agent_op=stop\" -vvv"
+                break
+                ;;
+        "Start Agents")
+                ansible-docker "--extra-vars \"agent_op=start\" -vvv"
+                break
+                ;;
+        "Restart Agents")
+                ansible-docker "--extra-vars \"agent_op=restart\" -vvv"
+                break
+                ;;
+        "dev-rpm-setup")
+                ansible-docker "--extra-vars \"env_op=local-rpm\" -vvv"
                 break
                 ;;
 
