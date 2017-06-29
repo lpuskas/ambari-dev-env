@@ -50,6 +50,6 @@ echo "Building docker image with HPD packages installed from $HDP_REPO_URL"
 echo
 echo "Building ambari/docker-dev:$TAG"
 
-docker build -f $(dirname "$0")/../hdp_preinstall.dockerfile -t "ambari/docker-dev:$TAG" .
+docker build --rm=true -f $(dirname "$0")/../hdp_preinstall.dockerfile -t "ambari/docker-dev:$TAG" .
 
 rm $HDP_REPO_FILE

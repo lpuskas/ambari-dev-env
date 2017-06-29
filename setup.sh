@@ -31,7 +31,7 @@ check-dev-env(){
 : ${LDAP_ROOTPASS:=s3cr3tpassw0rd}
 : ${DEV_DATABASE_SERVER_CONTAINER_MEM_LIMIT:=128m}
 : ${DEV_KERBEROS_SERVER_CONTAINER_MEM_LIMIT:=64m}
-: ${DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT:=1g}
+: ${DEV_AMBARI_SERVER_CONTAINER_MEM_LIMIT:=2g}
 : ${DEV_AMBARI_AGENT_CONTAINER_MEM_LIMIT:=2g}
 : ${DEV_ENABLE_CONTAINER_MONITORING:="false"}
 : ${DEV_DOCKER_AGENT_IMAGE_TAG:=latest}
@@ -118,7 +118,7 @@ check-dev-docker-image() {
   if docker history -q $DEV_DOCKER_IMAGE 2>&1 >/dev/null; then
     echo "$DEV_DOCKER_IMAGE image found."
   else
-    docker build -t $DEV_DOCKER_IMAGE .
+    docker build --rm=true -t $DEV_DOCKER_IMAGE .
   fi
 }
 
