@@ -55,9 +55,9 @@ RUN npm install -g npm@2.1.11
 RUN npm install -g brunch@1.7.20
 
 # Install unlimited security policy JCE jars to $JAVA_HOME/jre/lib/security/
-ADD container/UnlimitedJCEPolicyJDK7.zip /tmp/
-RUN unzip -o -j -q /tmp/UnlimitedJCEPolicyJDK7.zip -d $JAVA_HOME/jre/lib/security/
-RUN rm -rf /tmp/UnlimitedJCEPolicyJDK7.zip
+ADD container/jce_policy-8.zip /tmp/
+RUN unzip -o -j -q /tmp/jce_policy-8.zip -d $JAVA_HOME/jre/lib/security/
+RUN rm -rf /tmp/jce_policy-8.zip
 
 # Comment out  '/usr/lib/rpm/redhat/brp-python-hardlink' in '/usr/lib/rpm/redhat/macros'
 RUN sed -i -- 's/\/usr\/lib\/rpm\/redhat\/brp-python-hardlink/# \/usr\/lib\/rpm\/redhat\/brp-python-hardlink/g' /usr/lib/rpm/redhat/macros
