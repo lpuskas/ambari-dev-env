@@ -23,7 +23,6 @@ fi
 
 HDP_REPO_URL="$1"
 TAG="$2"
-HDP_REPO_NAME=${3:-hdp.repo}
 
 
 HDP_REPO_FILE=$(dirname "$0")/../hdp.repo
@@ -31,10 +30,9 @@ cat >> $HDP_REPO_FILE<<EOF
 [$TAG]
 name=$TAG
 baseurl=$HDP_REPO_URL
-
-path=/
-enabled=1
 gpgcheck=0
+enabled=1
+priority=1
 
 [HDP-UTILS]
 name=HDP-UTILS-1.1.0.21
