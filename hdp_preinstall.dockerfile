@@ -14,26 +14,42 @@ FROM ambari/docker-dev:latest
 
 ADD hdp.repo /etc/yum.repos.d/hdp.repo
 
+
 RUN yum -d 0 -e 0  -y install yum-skip-broken && yum update -y --skip-broken && \
     yum -d 0 -e 0 -y install --skip-broken \
-                hadoop hadoop-hdfs hadoop-libhdfs hadoop-yarn hadoop-mapreduce hadoop-client openssl \
-                snappy snappy-devel lzo lzo-devel hadooplzo hadooplzo-native \
-                zookeeper_2*-server zookeeper_2* \
-                hbase_2* phoenix_2* \
-                tez_2* \
-                hive2_2* hive-hcatalog hive-webhcat mysql-server \
-                pig_2* datafu_2* \
-                oozie_2* oozie-client mysql-connector-java extjs \
-                spark_2* livy_2* livy2_2* \
-                spark2_2* \
-                zeppelin_2* \
-                sqoop_2* flume_2* \
-                storm_2* \
-                accumulo_2* \
-                falcon_2* \
-                knox_2* \
-                kafka_2* \
-                slider_2* \
-                atlas-metadata_2* \
-                ranger_2*-admin ranger-2*-usersync ranger_2*-tagsync ranger_2*-kms \
+                accumulo-2* \
+                atlas-metadata-2* \
+                datafu-2* \
+                falcon-2* \
+                flume-2* \
+                hadoop hadoop-2* hadoop-client hadoop-hdfs hadoop-libhdfs hadoop-lzo hadoop-lzo-native hadoop-mapreduce hadoop-yarn hadoop_2* hadooplzo-2* \
+                hawq \
+                hbase-2* \
+                hcatalog hive-2* hive-hcatalog hive-webhcat hive2-2* hive_2* webhcat-tar-hive webhcat-tar-pig \
+                httpd \
+                kafka-2* \
+                knox-2* \
+                libhdfs0 libhdfs0-2* libhdfs0-dev liblzo2-2 libsnappy-dev libsnappy1 libsnappy1* libsnappy1v5* libtirpc-devel libxml2-utils \
+                spark_2* spark2_2* \
+                livy-2* livy2-2* livy2_2* \
+                lzo mahout \
+                mysql mysql-client mysql-community-release mysql-community-server mysql-connector-java mysql-server \
+                oozie-2* oozie-client \
+                phoenix-2* \
+                pig-2* \
+                postgresql-* \
+                pxf-* \
+                ranger-2* \
+                rpcbind \
+                rrdcached \
+                slider-2* \
+                snappy snappy-devel \
+                sqoop-2* \
+                storm-2* \
+                superset-2* \
+                tez-2* tez-hive2-2* tez_hive2_2* \
+                viprfs-client \
+                zeppelin-2* \
+                zip \
+                zookeeper-2* zookeeper_2* \
                 && mv /etc/yum.repos.d/hdp.repo /etc/yum.repos.d/HDP.repo
